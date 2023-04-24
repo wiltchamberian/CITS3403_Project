@@ -18,8 +18,6 @@ app.config['SECRET_KEY'] = '0x950341313543'
 #create socketio
 socketio = SocketIO(app,cors_allowed_origins="*", async_mode='eventlet')
 
-# 允许所有来源的 WebSocket 连接
-#CORS(socketio, origins='*')
 
 # initialize the app with the extension
 db.init_app(app)
@@ -43,7 +41,7 @@ def user_login():
 
 def protected():
   token = request.headers.get('Authorization')
-  # 验证令牌
+  # check token
   try:
       decoded_token = jwt.decode(token, app.config['SECRET_KEY'])
       return {'message': 'Access granted'}, True
@@ -106,7 +104,7 @@ def on_message(data):
 @socketio.on('custom_event')
 def on_custom_event(data):
     print('Custom Event:', data)
-    # 向发送事件的客户端发送回应
+    # send back to client
     emit('custom_event_response', {'message': 'Custom event received'})
 
 if __name__ == "__main__":
