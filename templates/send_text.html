@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <!-- Latest compiled and minified CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <title>Text Sending</title>
+        <!--<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+		    <link rel="stylesheet" href="../static/styles/index.css">
+    </head>
+    <body>
+        <div class="container" style="position: relative; left: 00px; top: 00px;" >
+            <textarea id = "send-text" rows="4" cols="50">
+            </textarea>
+        </div>
+        <div>
+            <button id = "dft_join">click to join default room</button>
+        </div>
+        <script>
+            var server_addr = "http://localhost:5000";
+            var socket = null;
+            var socket_send = null;
+
+            //apply for join room
+            function join(){
+                var socket = io.connect(server_addr);
+                socket.on('connect', function() {
+                    socket.emit('my event', {data: 'I\'m connected!'});
+                });
+
+
+                // 创建 WebSocket 对象
+                //socket = new WebSocket(server_addr);
+
+                // 连接成功时的回调函数
+                /*
+                socket.onopen = function(event) {
+                  console.log('join success:', event);
+
+                  socket_send = new WebSocket(server_addr +"//message");
+                  socket_send.onopen = function(event){
+                    console.log('send ready:', event);
+                  }
+
+                  socket.close()
+                };*/
+
+            }
+            
+            function sendText(textarea){
+                var inputValue = textarea.value;
+      
+                //create the data to be sent
+                var message = {
+                  text: inputValue
+                };
+                
+                socket_send.emit('message', message);
+
+                // 创建一个 XMLHttpRequest 对象
+                //var xhr = new XMLHttpRequest();
+                //xhr.open("POST", server_addr + "//send-text", true);
+                //xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                //xhr.onreadystatechange = onSendText;
+                //xhr.send(JSON.stringify(data));
+            }
+
+            function onSendText(){
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                      console.log("success");
+                      console.log(xhr.responseText); // 服务端返回的响应数据
+                    } else {
+                      console.error("fail: " + xhr.status);
+                    }
+                }
+            }
+
+            /**** these are for add listeners ****/
+            var textarea = document.getElementById('send-text');
+            //textarea.focus()
+            //textarea.setSelectionRange(0, 0); // 设置光标位置到开头
+            textarea.addEventListener('keydown', function(event) {
+              if (event.target === textarea) { 
+                if (event.keyCode === 13) {
+                  event.preventDefault();
+                  
+                  sendText(textarea)
+                }
+              }
+            });
+
+            var bt = document.getElementById('dft_join');
+            bt.addEventListener("click", join);
+      </script>
+    </body>
+</html>

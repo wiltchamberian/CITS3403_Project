@@ -12,23 +12,32 @@ class DbMgr(SQLAlchemy):
 
     def create_user(self, request):
         user = User(
-            username=request.form["username"],
-            password_hash=request.form["password"],
+            username = request.form["username"],
+            password_hash = request.form["password"],
         )
         db.session.add(user)
         self.commit_s()
 
-    
+    def receive_text(self, request):
+        json_data = request.get_json()
+        text = Text(
+            text = json_data.text
+        )
+        
 # create the extension,db is global
 db = DbMgr()
 
 
-
+#table for user info
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
 
+#table for text
+class Text(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String, unique=False, nullable=False)
 
 
             
