@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('#send-message').on('click', function() {
+          var message = $('#message').val();
+          $.ajax({
+            url: '/chat',
+            type: 'POST',
+            data: {message: message},
+            success: function(response) {
+              var bot_response = response.bot_response;
+              $('#chat-history').append('<p><strong>You:</strong> ' + message + '</p>');
+              $('#chat-history').append('<p><strong>Bot:</strong> ' + bot_response + '</p>');
+              $('#message').val('');
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Chat with Bot</h1>
+    <div id="chat-history"></div>
+    <input type="text" id="message">
+    <button id="send-message">Send</button>
+  </body>
+</html>
