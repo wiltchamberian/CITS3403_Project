@@ -4,7 +4,7 @@ from flask import request
 
 #from flask_cors import CORS
 
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room
 
 import jwt
 import datetime
@@ -51,7 +51,7 @@ def protected():
       return {'error': 'Invalid token'}, 401
 
 @app.route('/send-text', methods = ['POST'])
-def receive_text():
+def save_text():
   res = db.receive_text(request)
   #deliver the text to members in the room
   
@@ -59,46 +59,45 @@ def receive_text():
 
 @app.route('/')
 def index():
-    return "Hello World"
-    return render_template('templates/base.html')
+    print("index!")
+    return render_template('send_text.html')
 
 #this is for testing
 @app.route('/debug',methods = ['POST', 'GET'])
 def debug():
     return "Debug"
-    if request.method == 'POST':
-      return "Receive Post"
-    if request.method == 'GET':
-      return "Receive Get"
     
 
 #for chatting, use long-connect
 @socketio.on('connect')
 def on_connect():
-    print('Client connected')
+    print('on_connect')
+    emit('connect-success', {'text': 'connected'})
     return "succuess"
 
 @socketio.on('join')
-def on_join():
-    username = request.data['username']
-    room = request.data['room']
+def on_join(request):
+    print('on_join')
+    username = request["username"]
+    room = request["room"]
     join_room(room)
-    emit('message', {'text': f'{username} enter {room}'}, room = room)
+    emit('join-success', {'text': f'{username} enter {room}'}, room = room)
 
 @socketio.on('leave')
 def on_leave():
+    print("on_leave")
     username = request.data['username']
     room = request.data['room']
     leave_room(room)
     emit('message', {'text': f'{username} leave {room}'}, room = room)
 
 @socketio.on('message')
-def on_message(data):
-    data = request.get_json()
-    username = data['username']
-    room = data['room']
-    text = data['text']
-    receive_text(request)
+def on_message(request):
+    print("on_message!")
+    username = request['username']
+    room = request['room']
+    text = request['text']
+    db.receive_text(text)
     emit('message', {'username': username, 'text': text}, room = room)
 
 @socketio.on('custom_event')
@@ -110,5 +109,5 @@ def on_custom_event(data):
 if __name__ == "__main__":
     #app.run(debug=True)
     #start server by flask-socketio
-    print("Flask-SocketIO version:", )
+    print("Flask-SocketIO Start")
     socketio.run(app, host='0.0.0.0',port = 5000)

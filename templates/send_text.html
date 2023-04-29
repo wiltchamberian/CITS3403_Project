@@ -12,50 +12,83 @@
     </head>
     <body>
         <div class="container" style="position: relative; left: 00px; top: 00px;" >
+            <label>Receiving</label>
+            <textarea id = "receive-text" rows="4" cols="50">
+            </textarea>
+        </div>
+        <div class="container" style="position: relative; left: 00px; top: 00px;" >
+            <label>Sending</label>
             <textarea id = "send-text" rows="4" cols="50">
             </textarea>
         </div>
         <div>
             <button id = "dft_join">click to join default room</button>
+            <button id = "send-button">send text</button>
+        </div>
+        <div>
+          <button id = "simulate-receive">simulate receving text</button>
+        </div>
+        <div>
+          <!--<label id = "connecting">not connected</label>-->
+          <label id = "message">new information</label>
         </div>
         <script>
+            
             var server_addr = "http://localhost:5000";
             var socket = null;
             var socket_send = null;
+            //var label = document.getElementById('connecting');
+            var label_message = document.getElementById('message');
+            const state = {
+              connected: false
+            };
+            function label_msg(message){
+              var label_message = document.getElementById('message');
+              label_message.innerHTML  = message;
+            }
 
             //apply for join room
             function join(){
-                var socket = io.connect(server_addr);
-                socket.on('connect', function() {
-                    socket.emit('my event', {data: 'I\'m connected!'});
+                socket = io.connect(server_addr);
+                socket.on('connect_error', function(error) {
+                  label_msg("connect error!");
+                  console.error('Failed to connect:', error);
+                  socket.close();
                 });
-
-                //socket = new WebSocket(server_addr);
-
-                /*
-                socket.onopen = function(event) {
-                  console.log('join success:', event);
-
-                  socket_send = new WebSocket(server_addr +"//message");
-                  socket_send.onopen = function(event){
-                    console.log('send ready:', event);
-                  }
-
-                  socket.close()
-                };*/
+                socket.on('connect-success', function(data) {
+                    label_msg("connect sucess!");
+                    state.connected = true;
+                    socket.emit('join', 
+                    { msg: 'I want to join the room',
+                      username: "yao tang",
+                      room:"default room"
+                    });
+                    socket.on('join-success',function(data){
+                      label_msg("join success!")
+                      socket.on('message',onReceiveText);
+                    });
+                });
 
             }
             
-            function sendText(textarea){
+            function sendText(){
+                if(state.connected == false){
+                    label_message.setText("please make long connect to server!")
+                    return;
+                }
+                var textarea = document.getElementById('send-text');
                 var inputValue = textarea.value;
       
                 //create the data to be sent
                 var message = {
+                  msg: 'text message',
+                  username: "yao tang",
+                  room:"default room",
                   text: inputValue
                 };
+                //socketio server can only receive json message
+                socket.emit('message', message);
                 
-                socket_send.emit('message', message);
-
                 // create XMLHttpRequest 
                 //var xhr = new XMLHttpRequest();
                 //xhr.open("POST", server_addr + "//send-text", true);
@@ -64,16 +97,13 @@
                 //xhr.send(JSON.stringify(data));
             }
 
-            function onSendText(){
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                      console.log("success");
-                      console.log(xhr.responseText); // 服务端返回的响应数据
-                    } else {
-                      console.error("fail: " + xhr.status);
-                    }
-                }
+            function onReceiveText(data){
+              var textarea = document.getElementById('receive-text');
+              //var text = JSON.stringify(data);
+              var text = data["text"]
+              textarea.innerText = text;
             }
+            
 
             /**** these are for add listeners ****/
             var textarea = document.getElementById('send-text');
@@ -83,14 +113,21 @@
               if (event.target === textarea) { 
                 if (event.keyCode === 13) {
                   event.preventDefault();
-                  
-                  sendText(textarea)
+                  sendText()
                 }
               }
             });
 
             var bt = document.getElementById('dft_join');
             bt.addEventListener("click", join);
+            var bt2 = document.getElementById('send-button');
+            bt2.addEventListener("click", sendText);
+            var bt3 = document.getElementById('simulate-receive');
+            bt3.addEventListener("click", function(){
+              text = textarea.value;
+              onReceiveText(text);
+
+            } )
       </script>
     </body>
 </html>

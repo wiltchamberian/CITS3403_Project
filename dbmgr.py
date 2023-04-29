@@ -18,11 +18,12 @@ class DbMgr(SQLAlchemy):
         db.session.add(user)
         self.commit_s()
 
-    def receive_text(self, request):
-        json_data = request.get_json()
+    def receive_text(self, txt):
         text = Text(
-            text = json_data.text
+            text = txt
         )
+        db.session.add(text)
+        self.commit_s()
         
 # create the extension,db is global
 db = DbMgr()
