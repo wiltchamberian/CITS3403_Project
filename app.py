@@ -1,6 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, send_from_directory
 from dbmgr import *
-from flask import request
+from module import check_login
 
 #from flask_cors import CORS
 
@@ -30,6 +30,7 @@ def user_create():
       db.create_user(request)
   return 'data_base'
 
+"""
 @app.route('/login', methods= ['POST'])
 def user_login():
   # create token
@@ -37,6 +38,22 @@ def user_login():
   password = request.form["password"]
   token = jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
   return {'token': token.decode('utf-8')}
+"""
+
+#code for redirecting from login page, to chat page given correct credentials.
+#check_login() is a function checking if the credentials are correct.
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if(request.method == 'POST'):
+        username = request.form["username"]
+        password = request.form["password"]
+        if(check_login()):
+            return redirect(url_for('templates' , filename='chat.html'))
+        else:
+            return render_template('Attemptloginpage.html')
+    else:  
+        return render_template('Attemptloginpage.html')
+
 
 
 def protected():
