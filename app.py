@@ -1,6 +1,9 @@
 from flask import Flask, render_template
 from dbmgr import *
+from game  import *
 from flask import request
+from chat_socket import socketio,log
+from threading import Thread
 
 #from flask_cors import CORS
 
@@ -16,7 +19,15 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 # set private key 
 app.config['SECRET_KEY'] = '0x950341313543'
 #create socketio
-socketio = SocketIO(app,cors_allowed_origins="*", async_mode='eventlet')
+#socketio = SocketIO(app,cors_allowed_origins="*", async_mode='eventlet')
+socketio.init_app(app,cors_allowed_origins="*", async_mode='threading')
+#game server
+game = Game()
+thread = None
+
+# monkey patching is necessary because this application uses a background
+#import eventlet
+#eventlet.monkey_patch()
 
 
 # initialize the app with the extension
@@ -59,7 +70,7 @@ def save_text():
 
 @app.route('/')
 def index():
-    print("index!")
+    log("index!")
     return render_template('send_text.html')
 
 #this is for testing
@@ -71,13 +82,13 @@ def debug():
 #for chatting, use long-connect
 @socketio.on('connect')
 def on_connect():
-    print('on_connect')
+    log('on_connect')
     emit('connect-success', {'text': 'connected'})
     return "succuess"
 
 @socketio.on('join')
 def on_join(request):
-    print('on_join')
+    log('on_join')
     username = request["username"]
     room = request["room"]
     join_room(room)
@@ -85,7 +96,7 @@ def on_join(request):
 
 @socketio.on('leave')
 def on_leave():
-    print("on_leave")
+    log("on_leave")
     username = request.data['username']
     room = request.data['room']
     leave_room(room)
@@ -93,7 +104,7 @@ def on_leave():
 
 @socketio.on('message')
 def on_message(request):
-    print("on_message!")
+    log("on_message!")
     username = request['username']
     room = request['room']
     text = request['text']
@@ -102,12 +113,43 @@ def on_message(request):
 
 @socketio.on('custom_event')
 def on_custom_event(data):
-    print('Custom Event:', data)
+    log('Custom Event:', data)
     # send back to client
     emit('custom_event_response', {'message': 'Custom event received'})
+
+
+############################game related################################
+def game_process(request):
+    game.run(request)
+
+@socketio.on('join-game')
+def on_join_game(request):
+    log('join-game')
+    room = request["room"]
+    if(game.isStarted == False):
+        game.isStarted = True 
+        #socketio.start_background_task(game_process, request)
+        thread = Thread(target=game_process, args=[request])
+        thread.start()
+        
+    #check whether this guy has been in the game
+    name = request["username"]
+    if not game.has_player(name):
+        game.add_player(name)
+        #returning the 'join success' will be done in the thread
+    
+        
+
+@socketio.on('game-msg')
+def on_game_message(request):
+    log('game_message')
+    cmds = request['cmds']
+    game.receive_cmds(cmds)
+
+
 
 if __name__ == "__main__":
     #app.run(debug=True)
     #start server by flask-socketio
-    print("Flask-SocketIO Start")
+    log("Flask-SocketIO Start")
     socketio.run(app, host='0.0.0.0',port = 5000)

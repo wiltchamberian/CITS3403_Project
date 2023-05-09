@@ -9,6 +9,12 @@
         <!--<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 		    <link rel="stylesheet" href="../static/styles/index.css">
+        <style>
+          canvas {
+              border:1px solid #d3d3d3;
+              background-color: #f1f1f1;
+          }
+        </style>
     </head>
     <body>
         <div class="container" style="position: relative; left: 00px; top: 00px;" >
@@ -24,20 +30,17 @@
         <div>
             <button id = "dft_join">click to join default room</button>
             <button id = "send-button">send text</button>
+            <button id = "start-game">start game</button>
         </div>
         <div>
           <button id = "simulate-receive">simulate receving text</button>
         </div>
         <div>
-          <!--<label id = "connecting">not connected</label>-->
           <label id = "message">new information</label>
         </div>
-        <script>
-            
+        <script>            
             var server_addr = "http://localhost:5000";
             var socket = null;
-            var socket_send = null;
-            //var label = document.getElementById('connecting');
             var label_message = document.getElementById('message');
             const state = {
               connected: false
@@ -79,27 +82,19 @@
                 var textarea = document.getElementById('send-text');
                 var inputValue = textarea.value;
       
-                //create the data to be sent
+                //create the json to be sent as socketio only
+                //receive json message
                 var message = {
                   msg: 'text message',
                   username: "yao tang",
                   room:"default room",
                   text: inputValue
                 };
-                //socketio server can only receive json message
                 socket.emit('message', message);
-                
-                // create XMLHttpRequest 
-                //var xhr = new XMLHttpRequest();
-                //xhr.open("POST", server_addr + "//send-text", true);
-                //xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                //xhr.onreadystatechange = onSendText;
-                //xhr.send(JSON.stringify(data));
             }
 
             function onReceiveText(data){
               var textarea = document.getElementById('receive-text');
-              //var text = JSON.stringify(data);
               var text = data["text"]
               textarea.innerText = text;
             }
@@ -107,8 +102,6 @@
 
             /**** these are for add listeners ****/
             var textarea = document.getElementById('send-text');
-            //textarea.focus()
-            //textarea.setSelectionRange(0, 0); // 设置光标位置到开头
             textarea.addEventListener('keydown', function(event) {
               if (event.target === textarea) { 
                 if (event.keyCode === 13) {
@@ -128,6 +121,118 @@
               onReceiveText(text);
 
             } )
-      </script>
+
+            ////////////////////////////////game///////////////////////////////
+            var player = {
+              x:0,
+              y:0,
+              color:'red',
+              state:0 //0:dead 1:alive
+            }
+            var playerId = null
+            var actors = [];
+            var myScore;
+            var myGameArea = {
+                game_started : false,
+                canvas : document.createElement("canvas"),
+                start : function() {
+                    this.canvas.width = 480;
+                    this.canvas.height = 270;
+                    this.context = this.canvas.getContext("2d");
+                    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                    this.frameNo = 0;
+                    //this.interval = setInterval(updateGameArea, 20);
+                    this.width = 10
+                    this.height = 10
+                    this.color = 'green'
+                    },
+                clear : function() {
+                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                },
+                renderAll:function(){
+                  ctx = myGameArea.context;
+                  ctx.fillStyle = color;
+                  ctx.fillRect(50, 50, this.width, this.height);
+                  for(let i= 0; i< actors.length;++i){
+                      renderActor(actors[i])
+                  }
+                },
+                renderActor: function(actor){
+                  ctx = myGameArea.context;
+                  ctx.fillStyle = color;
+                  ctx.fillRect(actor["x"], actor["y"], this.width, this.height);
+                }
+            }
+            function startGame() {
+                myGameArea.start();
+                socket.emit('join-game', 
+                    { msg: 'join-game',
+                      username: "yao tang",
+                      room:"default room"
+                    });
+                    socket.on('join-game-success',function(data){
+                      label_msg("join-game-success")
+                      playerId = data['id']
+                      myGameArea.game_started = True
+                      socket.on('game',onGameRecevie);
+                      
+                      document.addEventListener('keydown', function(event) {
+                          var msg = {
+                                username: "yao tang",
+                                room:"default room",
+                                cmds:{
+                                  type:'move',
+                                  id:playerId,
+                                  dx:0,
+                                  dy:0,
+                                }
+                              };
+
+                          var d = 10
+                          //w
+                          if (event.keyCode === 87) {
+                            msg.cmd.dy = d
+                          }
+                          //s
+                          else if(event.keyCode == 83){
+                            msg.cmd.dy = -d
+                          }
+                          //a 
+                          else if(event.keyCode == 65){
+                            msg.cmd.dx = -d
+                          }
+                          //d
+                          else if(event.leyCode == 68){
+                            msg.cmd.dx = d
+                          }
+                          socket.emit('game-msg', msg);
+                      });
+
+                      //////////
+                    });
+
+                
+            }
+
+            function onGameRecevie(data){
+              //update game states
+              const myArray = JSON.parse(data);
+              myGameArea.clear();
+              myGameArea.frameNo += 1;
+              for(let i = 0; i < myArray.length; ++i){
+                const actor = myArray[i];
+                let id = actor["id"];
+                let type = actor["type"];
+                actors[id] = actor;
+              }
+              //render
+              myGameArea.renderAll();
+            }
+
+            var bt = document.getElementById('start-game');
+                bt.addEventListener("click", startGame);
+            
+
+        </script>
     </body>
 </html>
