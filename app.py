@@ -9,6 +9,12 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import jwt
 import datetime
 
+from app import db, User, Text
+
+user = User(username='testuser', password_hash='testpassword')
+db.session.add(user)
+db.session.commit()
+
 # create the app
 app = Flask(__name__)
 # configure the SQLite database, relative to the app instance folder
@@ -17,6 +23,19 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config['SECRET_KEY'] = '0x950341313543'
 #create socketio
 socketio = SocketIO(app,cors_allowed_origins="*", async_mode='eventlet')
+
+# Create some dummy messages
+messages = [
+  Text(username='user1', text='Hello', timestamp='2022-05-09 10:00:00'),
+  Text(username='user2', text='Hi there', timestamp='2022-05-09 10:01:00'),
+  Text(username='user1', text='How are you?', timestamp='2022-05-09 10:02:00'),
+  Text(username='user2', text='I am good, thanks!', timestamp='2022-05-09 10:03:00')
+]
+
+# Add the messages to the database
+db.session.add_all(messages)
+db.session.commit()
+
 
 
 # initialize the app with the extension
@@ -59,14 +78,19 @@ def save_text():
 
 @app.route('/')
 def index():
-    print("index!")
-    return render_template('send_text.html')
+  print("index!")
+  return render_template('send_text.html')
 
 #this is for testing
 @app.route('/debug',methods = ['POST', 'GET'])
 def debug():
-    return "Debug"
-    
+  return "Debug"
+
+@app.route('/chat_history')
+def chat_history():
+  current_user = User.query.filter_by(username='testuser').first()
+  messages = Text.query.filter_by(username=current_user.username).all()
+  return render_template('chat_history.html', messages=messages)
 
 #for chatting, use long-connect
 @socketio.on('connect')
@@ -107,7 +131,7 @@ def on_custom_event(data):
     emit('custom_event_response', {'message': 'Custom event received'})
 
 if __name__ == "__main__":
-    #app.run(debug=True)
+    app.run(debug=True)
     #start server by flask-socketio
     print("Flask-SocketIO Start")
     socketio.run(app, host='0.0.0.0',port = 5000)
