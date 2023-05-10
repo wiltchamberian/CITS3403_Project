@@ -6,7 +6,7 @@ from chat_socket import socketio,log
 from threading import Thread
 from threading import Lock
 
-from chat_socket import users, user_lock
+from chat_socket import users, user_lock, g_dic_sids, g_games, g_game_count, g_user_rooms
 #this code can't pass compile and it seems there are no modules called "module"
 #from module import check_login
 
@@ -26,12 +26,15 @@ app.config['SECRET_KEY'] = '0x950341313543'
 #create socketio
 #socketio = SocketIO(app,cors_allowed_origins="*", async_mode='eventlet')
 socketio.init_app(app,cors_allowed_origins="*", async_mode='threading')
-#game server
-game = Game()
-thread = None
+
+#game servers
+for i in range(g_game_count):
+    g_games.append(Game())
+
 
 
 def check_heart():
+    return
     HEART_INTERVAL = 10
     while True:
         now = time.time()
@@ -39,7 +42,7 @@ def check_heart():
             for user, time in list(users.items()):
                 if (now - users[user] > HEART_INTERVAL):
                     del users[user]
-                    game.removeActor()
+                    game.remove_player(user)
     
 heart_thread = Thread(target = check_heart)
 heart_thread.start()
@@ -83,13 +86,12 @@ def login():
         password = request.form["password"]
         #if(check_login()):
          #   return redirect(url_for('templates' , filename='chat.html'))
-        if False:
-            pass
+        if True:
+            users[username] = time.time()
         else:
             return render_template('Attemptloginpage.html')
     else:  
         return render_template('Attemptloginpage.html')
-
 
 
 def protected():
@@ -124,32 +126,62 @@ def debug():
 #for chatting, use long-connect
 @socketio.on('connect')
 def on_connect():
+    client_id = request.sid
     log('on_connect')
     emit('connect-success', {'text': 'connected'})
     return "succuess"
 
+@socketio.on('disconnect')
+def handle_disconnect():
+    client_id = request.sid
+    print('client disconnected with ID:', client_id)
+    name = g_dic_sids[client_id]
+    room = g_user_rooms[name]
+    g_games[room].remove_player(name)
+    if room in socketio.server.manager.rooms:
+       if client_id in socketio.server.manager.rooms[room]:
+           leave_room(room)
+    users.pop(name, None)
+    g_user_rooms.pop(name, None)
+    g_dic_sids.pop(client_id, None)
+
 @socketio.on('join')
-def on_join(request):
+def on_join(data):
+    client_id = request.sid
     log('on_join')
-    username = request["username"]
-    room = request["room"]
+    username = data["username"]
+    room = data["room"]
+
+    if room in socketio.server.manager.rooms:
+        if client_id in socketio.server.manager.rooms[room]:
+            emit('join-again', {'txt':'in room'},room = room)
+            return
+        
+    #the user has been in this room
+    if(g_user_rooms.get(username)== room):
+        emit('join-again', {'txt':'in room'},room = room)
+        return
+    
+    g_dic_sids[client_id] = username
+    g_user_rooms[username] = room
+    
     join_room(room)
     emit('join-success', {'text': f'{username} enter {room}'}, room = room)
 
 @socketio.on('leave')
-def on_leave():
+def on_leave(data):
     log("on_leave")
-    username = request.data['username']
-    room = request.data['room']
+    username = data['username']
+    room = data['room']
     leave_room(room)
     emit('message', {'text': f'{username} leave {room}'}, room = room)
 
 @socketio.on('message')
-def on_message(request):
+def on_message(data):
     log("on_message!")
-    username = request['username']
-    room = request['room']
-    text = request['text']
+    username = data['username']
+    room = data['room']
+    text = data['text']
     db.receive_text(text)
     emit('message', {'username': username, 'text': text}, room = room)
 
@@ -159,43 +191,37 @@ def on_custom_event(data):
     # send back to client
     emit('custom_event_response', {'message': 'Custom event received'})
 
-@socketio.on_heart('heart')
-def on_heart(request):
+@socketio.on('heart')
+def on_heart(data):
     log('on_heart')
-    add_to_dict(request['user'],time.time())
-    #cmds = {"type":"heart" ,"id":request["id"]}
+    add_to_dict(data['user'],time.time())
+    #cmds = {"type":"heart" ,"id":data["id"]}
     #game.enqueue_cmds(cmds)
 
 ############################game related################################
-def game_process(request):
-    game.run(request)
-
-
-
 @socketio.on('join-game')
-def on_join_game(request):
+def on_join_game(data):
     log('join-game')
-    room = request["room"]
-    if(game.isStarted == False):
-        game.isStarted = True 
-        #socketio.start_background_task(game_process, request)
-        thread = Thread(target=game_process, args=[request])
-        thread.start()
-        
-    #check whether this guy has been in the game
-    name = request["username"]
-    if not game.has_player(name):
-        game.add_player(name)
-        #returning the 'join success' will be done in the thread
+    room = data["room"]
+    name = data["username"]
+    #just add, if the players has been in the game, game will process it
+    g_games[room].add_player(name)
+    g_games[room].start(data)
+      
     
-        
+@socketio.on('leave-game')
+def on_leave_game(data):
+    name =  data['name']
+    del users[name]
+    room = data['room']
+    g_games[room].remove_player(name)      
 
 @socketio.on('game-msg')
-def on_game_message(request):
+def on_game_message(data):
+    room = data['room']
     log('game_message')
-    cmds = request['cmds']
-    game.enqueue_cmds(cmds)
-
+    cmds = data['cmds']
+    g_games[room].enqueue_cmds(cmds)
 
 
 if __name__ == "__main__":

@@ -50,7 +50,17 @@
               var label_message = document.getElementById('message');
               label_message.innerHTML  = message;
             }
-
+            function send_heart(){
+                // 设置心跳间隔时间
+                let heartbeatInterval = 2000; // 2秒
+                // 发送心跳请求
+                heartbeatTimer = setInterval(() => {
+                  socket.emit('heart', { msg: 'heart',
+                      username: "yao tang",
+                      room: roomId
+                    })}
+                    , heartbeatInterval);
+            }
             //apply for join room
             function join(){
                 socket = io.connect(server_addr);
@@ -65,25 +75,14 @@
                     socket.emit('join', 
                     { msg: 'I want to join the room',
                       username: "yao tang",
-                      room:"default room"
+                      room: roomId
                     });
                     socket.on('join-success',function(data){
                       label_msg("join success!")
                       socket.on('message',onReceiveText);
-
-                      // 设置心跳间隔时间
-                      let heartbeatInterval = 2000; // 2秒
-
-                      // 发送心跳请求
-                      heartbeatTimer = setInterval(() => {
-                        socket.emit('heart', { msg: 'heart',
-                            username: "yao tang",
-                            room:"default room"
-                          })}
-                          , heartbeatInterval);
-                      });
-                });
-
+                      //send_heart()
+                    });
+                })
             }
             
             function sendText(){
@@ -99,7 +98,7 @@
                 var message = {
                   msg: 'text message',
                   username: "yao tang",
-                  room:"default room",
+                  room: roomId,
                   text: inputValue
                 };
                 socket.emit('message', message);
@@ -131,10 +130,24 @@
             bt3.addEventListener("click", function(){
               text = textarea.value;
               onReceiveText(text);
-
             } )
 
             ////////////////////////////////game///////////////////////////////
+            //keys process 
+            var keyState = {};
+            document.addEventListener("keypress", function(event) {
+              keyState[event.key] = true;
+              console.log("key_down")
+            });
+            document.addEventListener("keyup", function(event) {
+              keyState[event.key] = false;
+              console.log("key_up")
+            });
+            function isKeyDown(key) {
+              return keyState[key] == true;
+            }
+
+            var roomId = 0
             var player = {
               x:0,
               y:0,
@@ -156,22 +169,27 @@
                     //this.interval = setInterval(updateGameArea, 20);
                     this.width = 10
                     this.height = 10
-                    this.color = 'green'
+                    this.color = 'red'
                     },
                 clear : function() {
                     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 },
-                renderAll:function(){
-                  ctx = myGameArea.context;
-                  ctx.fillStyle = color;
+                renderAllElements:function(){
+                  ctx = this.context;
+                  ctx.fillStyle = this.color;
                   ctx.fillRect(50, 50, this.width, this.height);
                   for(let i= 0; i< actors.length;++i){
-                      renderActor(actors[i])
+                      if(actors[i]["state"] == true){
+                          this.renderActor(actors[i])
+                      }
                   }
                 },
                 renderActor: function(actor){
-                  ctx = myGameArea.context;
-                  ctx.fillStyle = color;
+                  ctx = this.context;
+                  ctx.fillStyle = this.color;
+                  if(actor["type"]=='player'){
+                    ctx.fillStyle = 'green'
+                  }
                   ctx.fillRect(actor["x"], actor["y"], this.width, this.height);
                 }
             }
@@ -180,47 +198,45 @@
                 socket.emit('join-game', 
                     { msg: 'join-game',
                       username: "yao tang",
-                      room:"default room"
+                      room: roomId
                     });
                     socket.on('join-game-success',function(data){
                       label_msg("join-game-success")
                       playerId = data['id']
-                      myGameArea.game_started = True
+                      myGameArea.game_started = true
                       socket.on('game',onGameRecevie);
                       
-                      document.addEventListener('keydown', function(event) {
-                          var msg = {
-                                username: "yao tang",
-                                room:"default room",
-                                cmds:{
-                                  type:'move',
-                                  id:playerId,
-                                  dx:0,
-                                  dy:0,
-                                }
-                              };
+                      
 
-                          var d = 10
-                          //w
-                          if (event.keyCode === 87) {
-                            msg.cmd.dy = d
-                          }
-                          //s
-                          else if(event.keyCode == 83){
-                            msg.cmd.dy = -d
-                          }
-                          //a 
-                          else if(event.keyCode == 65){
-                            msg.cmd.dx = -d
-                          }
-                          //d
-                          else if(event.leyCode == 68){
-                            msg.cmd.dx = d
-                          }
-                          socket.emit('game-msg', msg);
-                      });
+                      var intervalId = setInterval(function(){
+                        let msg = {
+                            username: "yao tang",
+                            room: roomId,  //rooms are fixed number,
+                            cmds:{ 
+                              name:'yao tang',
+                              type:'move',
+                              id:playerId,
+                              dx:0,
+                              dy:0,
+                            }
+                          };
+                        let d = 10;
+                        if(isKeyDown('w')){
+                          msg.cmds.dy = -d
+                        }
+                        if(isKeyDown('s')){
+                          msg.cmds.dy = d
+                        }
+                        if(isKeyDown('a')){
+                          msg.cmds.dx = -d
+                        }
+                        if(isKeyDown('d')){
+                          msg.cmds.dx = d
+                        }
+                        socket.emit('game-msg', msg);
 
-                      //////////
+                      }, 1000/30);
+                      
                     });
 
                 
@@ -238,7 +254,7 @@
                 actors[id] = actor;
               }
               //render
-              myGameArea.renderAll();
+              myGameArea.renderAllElements();
             }
 
             var bt = document.getElementById('start-game');

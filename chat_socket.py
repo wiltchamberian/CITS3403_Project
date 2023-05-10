@@ -7,5 +7,11 @@ socketio = SocketIO()
 
 log = print
 
-users = {}
+#TODO add an manager class and put these variable in it
+users = {} #key:username value:time
+g_user_rooms = {} #key:username value:room
+g_dic_sids = {} #key:sid value:username
 user_lock = Lock()
+#key:room 
+g_games = []
+g_game_count = 1

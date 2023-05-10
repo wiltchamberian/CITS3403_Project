@@ -8,6 +8,7 @@ import random
 from flask_socketio import SocketIO, emit
 from chat_socket import socketio, log, users, user_lock
 from flask import current_app
+from threading import Lock , Thread
 
 #this is a role in the game, can be a pawn or an object
 #pawn is the role controled by the player, object is obstale or enemies
@@ -38,11 +39,14 @@ class Actor:
         self.context["x"] = x
         self.context["y"] = y
 
+    def getPosition(self):
+        return self.context["x"],self.context["y"]
+
     def move(self, dx,dy):
         self.context["x"] += dx
         self.context["y"] += dy
 
-    def getId(self,id):
+    def getId(self):
         return self.context["id"]
     
     def setId(self, id):
@@ -56,46 +60,83 @@ class Actor:
 
     def collide_with(self, actor):
         return False
+  
 # 创建一个对象
 
 #this is for process game logic
 class Game: 
     def __init__(self):
         self.width = 480
-        self.height = 720
-        self.obj_speed = 20
+        self.height = 270
+        self.obj_speed = 5
 
         self.queue = queue.Queue(maxsize = 50)
         self.start_time = 0
-        self.interval = 3 #60 frames each second
+        #60 frames each second
+        self.interval = 1/30
         self.actors = []#include pawns and objects
-        self.actor_update_ids = []
+        self.updated_actor_ids = []
         self.lookup = [] #save the index of removed actors
         self.pawns = []
 
         self.isStarted = False
+        #this is a dictionary, key:name, value:id
         self.players = {}
         self.room = None
         self.frameNo = 0
+        self.lock = Lock()
+        self.setFlag(False)
+
+        self.thread = None
     
+
     ################### these are interfaces for being called outside game thread###########
+    ###################so need to use the queue to deliver command##########################
     #interface for add a player
     def add_player(self, name):
-        self.players.update(name, 0)
-        cmds = {"type": 'new-player',"id": 0}
+        cmds = {"type": 'new-player',"id": 0,'name':name}
         self.enqueue_cmds(cmds)
-        log('add_player_finish')
+    
+    def remove_player(self, name):
+        #the id here has no use but for preventing none
+        cmds = {"type":'remove-player','name':name ,"id": 0} 
+        self.enqueue_cmds(cmds)
+
+    def setFlag(self, b):
+        with self.lock:
+            self.run_flag = b
+
+    def is_run(self):
+        fg = False
+        with self.lock:
+            fg = self.run_flag
+        return fg
+    
+    def start(self, request):
+        with self.lock:
+            if(self.run_flag == False):
+                #socketio.start_background_task(game_process, request)
+                self.thread = Thread(target = Game.run, args= (self, request))
+                self.thread.start()
+
+    ################################called internally################################
+    def out_of_screen(self,actor):
+        x,y = actor.getPosition()
+        if y > self.height or y < 0:
+            return True
+        if x < 0 or x > self.width:
+            return True
+        return False
 
     def has_player(self,name):
         if name in self.players:
             return True
         return False
     
-    def remove_player(self, name):
-        self.players.pop(name)
+    #stop the game and clear the memory
+    def stop_run(self):
+        self.__init__()
 
-
-    ################################called internally################################
     #use some algorithms to generate new objects
     def simulate_new_obj(self):
         id = self.addNewActor('obj')
@@ -109,7 +150,7 @@ class Game:
     #create some objects and move them automatically like ans Ai system
     #these objects are obstacles or enemies
     def simulate(self):
-        objNum = len(self.actors)- len(self.pawns)
+        objNum = len(self.actors)- len(self.pawns)-len(self.lookup)
         if(objNum > 3 and objNum < 10):
             t = random.randint(0, 1)
             if t > 0:
@@ -120,15 +161,18 @@ class Game:
         #random move object
         player_ids = []
         for i in range(len(self.actors)):
-            ac = self.actors[i]
-            if(ac != None):
-                dx = random.uniform(0, 10)
-                dy = random.uniform(0,10)
-                if(ac.getType() == "obj"):
-                    ac.move(0, self.obj_speed)
-                    ac.move(dx ,dy)
-                else:
-                    player_ids.append(i)
+            if(self.actors[i].getState() == 1):
+                ac = self.actors[i]
+                if(ac != None):
+                    dx = random.uniform(0, 10)
+                    dy = random.uniform(0,10)
+                    if(ac.getType() == "obj"):
+                        ac.move(0, self.obj_speed)
+                        ac.move(dx ,dy)
+                        if(self.out_of_screen(ac)):
+                            self.removeActor(ac.getId())
+                    else:
+                        player_ids.append(i)
 
         #check collision
         for i in range(len(player_ids)):
@@ -172,10 +216,14 @@ class Game:
 
     #main function, entry
     def run(self, request):
+        self.setFlag(True)
+        #can't make sure if the thread run here after queue has been push something
+        #self.queue = queue.Queue(maxsize = 50)#use clear to instead
         self.room = request["room"]
-        while True:
+        print("game{0} ".format(self.room),"starts")
+        while self.run_flag == True:
             start_time = time.perf_counter()
-            self.actor_update_ids = []
+            self.updated_actor_ids = []
             while(not self.queue.empty()):
                 cmds = self.queue.get()
                 self.process_cmds(cmds)
@@ -190,25 +238,38 @@ class Game:
             dtime = end_time - start_time
             if(dtime < self.interval):
                 time.sleep(self.interval - dtime)
+
+        print("game{0} ".format(self.room),"over")
             
     #process the commands sent from clients
     def process_cmds(self, cmds):
-        id = cmds['id']
-        name = cmds['name']
+        id = cmds.get('id', None)
+        name = cmds.get('name',None)
+        if name == None or id == None:
+            print("id or name is None")
+            return
         self.updated_actor_ids = []
         #move 
         if(cmds['type'] == 'move'):
             self.actors[id].move(cmds['dx'],cmds['dy'])
+            if self.out_of_screen(self.actors[id]):
+                self.actors[id].move(-cmds['dx'],-cmds['dy'])
+                
         elif(cmds['type'] == 'attack'):
             pass
         elif(cmds['type'] == 'new-player'):
-            id = self.addNewActor('player')
-            with user_lock:
-                users[name] = id
-            socketio.emit('join-game-success', {'msg':'success','id': id}, room = self.room)
-            log("join-game-success")
-        elif(cmds['type'] == 'heart'):
-            self.update_heart(cmds)
+            if(not self.has_player(name)):
+                id = self.addNewActor('player')
+                self.players[name] = id
+                socketio.emit('join-game-success', {'msg':'success','id': id}, room = self.room)
+                log("join-game-success")     
+        elif(cmds['type'] == 'remove-player'):
+            if(self.players.get(cmds['name']) != None):
+                self.players.pop(cmds['name'], None)
+                self.removeActor(cmds['id'])
+                if(len(self.players) == 0):
+                    self.stop_run()
+            
 
         self.add_actor_to_update_list(id)
         return 
@@ -216,12 +277,18 @@ class Game:
     #after update the states, send back to clients
     def send_states(self, request):
         arr = []
-        for i in range(len(self.actor_update_ids)):
-            arr.append(self.actors[self.actor_update_ids[i]].context)
+        #for i in range(len(self.updated_actor_ids)):
+         #   arr.append(self.actors[self.updated_actor_ids[i]].context)
             
         #update scene states
+        #json_string = json.dumps(arr)
+        for i in range(len(self.actors)):
+            #if self.actors[i] != None and self.actors[i].getState() == 1:
+            if self.actors[i] != None: #if the actor die, still need to send
+                arr.append(self.actors[i].context)
         json_string = json.dumps(arr)
 
         #emit states to clients
         socketio.emit('game', json_string, room = self.room)
-        print("emit")
+        print("room:",self.room)
+        print(json_string)
