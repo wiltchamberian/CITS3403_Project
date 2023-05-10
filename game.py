@@ -6,9 +6,8 @@ import pickle
 import json
 import random
 from flask_socketio import SocketIO, emit
-from chat_socket import socketio, log
+from chat_socket import socketio, log, users, user_lock
 from flask import current_app
-
 
 #this is a role in the game, can be a pawn or an object
 #pawn is the role controled by the player, object is obstale or enemies
@@ -75,10 +74,28 @@ class Game:
         self.pawns = []
 
         self.isStarted = False
-        self.players = set()
+        self.players = {}
         self.room = None
         self.frameNo = 0
+    
+    ################### these are interfaces for being called outside game thread###########
+    #interface for add a player
+    def add_player(self, name):
+        self.players.update(name, 0)
+        cmds = {"type": 'new-player',"id": 0}
+        self.enqueue_cmds(cmds)
+        log('add_player_finish')
 
+    def has_player(self,name):
+        if name in self.players:
+            return True
+        return False
+    
+    def remove_player(self, name):
+        self.players.pop(name)
+
+
+    ################################called internally################################
     #use some algorithms to generate new objects
     def simulate_new_obj(self):
         id = self.addNewActor('obj')
@@ -88,18 +105,6 @@ class Game:
         actor.setPosition(x, y)
         r = random.uniform(3, 8)
         actor.setRadius(r)
-        
-    #interface for add a player
-    def add_player(self, name):
-        self.players.add(name)
-        cmds = {"type": 'new-player',"id": 0}
-        self.enqueue_cmds(cmds)
-        log('add_player_finish')
-
-    def has_player(self,name):
-        if name in self.players:
-            return True
-        return False
         
     #create some objects and move them automatically like ans Ai system
     #these objects are obstacles or enemies
@@ -189,6 +194,7 @@ class Game:
     #process the commands sent from clients
     def process_cmds(self, cmds):
         id = cmds['id']
+        name = cmds['name']
         self.updated_actor_ids = []
         #move 
         if(cmds['type'] == 'move'):
@@ -197,8 +203,12 @@ class Game:
             pass
         elif(cmds['type'] == 'new-player'):
             id = self.addNewActor('player')
+            with user_lock:
+                users[name] = id
             socketio.emit('join-game-success', {'msg':'success','id': id}, room = self.room)
             log("join-game-success")
+        elif(cmds['type'] == 'heart'):
+            self.update_heart(cmds)
 
         self.add_actor_to_update_list(id)
         return 
