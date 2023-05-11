@@ -9,6 +9,15 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import jwt
 import datetime
 
+"""
+variable to check if you're logged in or not, will use /login
+to change it and will redirect user, to login page if it's not true.
+Might need to make it a variable for each user in the database instead.
+So it doesn't turn true for everyone once someone logs in, but for now,
+it's fine.
+"""
+login_var = False
+
 # create the app
 app = Flask(__name__)
 # configure the SQLite database, relative to the app instance folder
@@ -48,6 +57,8 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         if(check_login()):
+            global login_var 
+            login_var = True
             return redirect(url_for('templates' , filename='chat.html'))
         else:
             return render_template('Attemptloginpage.html')
