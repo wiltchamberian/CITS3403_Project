@@ -1,36 +1,19 @@
-from flask import Flask, render_template, request, send_from_directory
+
 from dbmgr import *
 from game  import *
 from flask import request
-from chat_socket import socketio,log
+from settings import socketio,log, users, user_lock, g_dic_sids, g_games, g_game_count, g_user_rooms, app, db
 from threading import Thread
 from threading import Lock
-
-from chat_socket import users, user_lock, g_dic_sids, g_games, g_game_count, g_user_rooms
 #this code can't pass compile and it seems there are no modules called "module"
 #from module import check_login
-
 #from flask_cors import CORS
-
 from flask_socketio import SocketIO, emit, join_room, leave_room
-
 import jwt
 import datetime
 
-from app import db, User, Text
 
-# create the app
-app = Flask(__name__)
-# configure the SQLite database, relative to the app instance folder
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-# set private key 
-app.config['SECRET_KEY'] = '0x950341313543'
-#create socketio
-#socketio = SocketIO(app,cors_allowed_origins="*", async_mode='eventlet')
-socketio.init_app(app,cors_allowed_origins="*", async_mode='threading')
 
-# initialize the app with the extension
-db.init_app(app)
 with app.app_context():
     db.create_all()
     user = User(username='testuser', password_hash='testpassword')
@@ -49,16 +32,6 @@ with app.app_context():
     db.session.add_all(messages)
     db.session.commit()
     '''
-
-
-
-
-
-
-#game servers
-for i in range(g_game_count):
-    g_games.append(Game())
-
 
 
 def check_heart():

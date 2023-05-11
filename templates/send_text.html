@@ -52,6 +52,16 @@
               display: flex;
               margin-left: 10%;
           }
+          .round-button{
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background-color: #008CBA;
+              border: none;
+              outline: none;
+              cursor: pointer;
+              /*box-shadow: 0 2px 6px rgba(0,0,0,0.3);*/
+          }
         </style>
     </head>
     <body>
@@ -72,7 +82,8 @@
             <button id = "start-game">start game</button>
         </div>
         <div class="div_buttons">
-          <label id = "message">new information</label>
+          <button class="round-button"></button>
+          <label id = "message">off line</label>
         </div>
         <script>            
             var server_addr = "http://localhost:5000";

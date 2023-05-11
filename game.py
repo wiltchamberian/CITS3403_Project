@@ -6,9 +6,11 @@ import pickle
 import json
 import random
 from flask_socketio import SocketIO, emit
-from chat_socket import socketio, log, users, user_lock
 from flask import current_app
 from threading import Lock , Thread
+
+socketio = SocketIO()
+log = print
 
 #this is a role in the game, can be a pawn or an object
 #pawn is the role controled by the player, object is obstale or enemies
