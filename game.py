@@ -66,8 +66,8 @@ class Actor:
 #this is for process game logic
 class Game: 
     def __init__(self):
-        self.width = 480
-        self.height = 270
+        self.width = 720
+        self.height = 420
         self.obj_speed = 5
 
         self.queue = queue.Queue(maxsize = 50)

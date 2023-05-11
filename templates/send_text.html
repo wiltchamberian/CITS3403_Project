@@ -10,32 +10,68 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 		    <link rel="stylesheet" href="../static/styles/index.css">
         <style>
+          button {
+              background: linear-gradient(to bottom, #00c6ff, #0072ff);
+              border: none;
+              color: white;
+              padding: 10px 20px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              cursor: pointer;
+              border-radius: 8px;
+          }
+          label {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #00BFFF;
+          }
+          textarea{
+              margin: 4px 2px;
+              border:2px solid #00BFFF;
+              border-radius: 3px;
+          }
           canvas {
-              border:1px solid #d3d3d3;
-              background-color: #f1f1f1;
+              border:3px solid #00BFFF;
+              border-radius: 5px;
+              background-color:#FFFFFF;   /*#f1f1f1;*/
+              position: relative;
+              margin-top: 0.2%;
+              /*left: 10%;*/
+              width: 720px;
+              height: 420px;
+          }
+          .container {
+              display: flex;
+              margin-left: 5%;
+          }
+          .div_buttons{
+              display: flex;
+              margin-left: 10%;
           }
         </style>
     </head>
     <body>
-        <div class="container" style="position: relative; left: 00px; top: 00px;" >
-            <label>Receiving</label>
-            <textarea id = "receive-text" rows="4" cols="50">
-            </textarea>
+        <div class="container">
+            <canvas id="myCanvas"></canvas>
+            <!--<label id="receive-label">Receiving</label>-->
+            <textarea id = "receive-text" rows="4" cols="50"></textarea>
         </div>
-        <div class="container" style="position: relative; left: 00px; top: 00px;" >
-            <label>Sending</label>
-            <textarea id = "send-text" rows="4" cols="50">
-            </textarea>
+        <div class = "container">
+            <label id="send-label">Sending</label>
         </div>
-        <div>
-            <button id = "dft_join">click to join default room</button>
+        <div class="container">
+            <textarea id = "send-text" rows="2" cols="80"></textarea>
             <button id = "send-button">send text</button>
+            <button id = "dft_join">click to join default room</button>    
+        </div>
+        <div class="div_buttons">
             <button id = "start-game">start game</button>
         </div>
-        <div>
-          <button id = "simulate-receive">simulate receving text</button>
-        </div>
-        <div>
+        <div class="div_buttons">
           <label id = "message">new information</label>
         </div>
         <script>            
@@ -126,11 +162,6 @@
             bt.addEventListener("click", join);
             var bt2 = document.getElementById('send-button');
             bt2.addEventListener("click", sendText);
-            var bt3 = document.getElementById('simulate-receive');
-            bt3.addEventListener("click", function(){
-              text = textarea.value;
-              onReceiveText(text);
-            } )
 
             ////////////////////////////////game///////////////////////////////
             //keys process 
@@ -159,12 +190,12 @@
             var myScore;
             var myGameArea = {
                 game_started : false,
-                canvas : document.createElement("canvas"),
+                canvas : document.getElementById("myCanvas"),
                 start : function() {
-                    this.canvas.width = 480;
-                    this.canvas.height = 270;
+                    this.canvas.width = 720;
+                    this.canvas.height = 420;
                     this.context = this.canvas.getContext("2d");
-                    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                    //document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                     this.frameNo = 0;
                     //this.interval = setInterval(updateGameArea, 20);
                     this.width = 10
@@ -177,7 +208,7 @@
                 renderAllElements:function(){
                   ctx = this.context;
                   ctx.fillStyle = this.color;
-                  ctx.fillRect(50, 50, this.width, this.height);
+                  //ctx.fillRect(50, 50, this.width, this.height);
                   for(let i= 0; i< actors.length;++i){
                       if(actors[i]["state"] == true){
                           this.renderActor(actors[i])
@@ -206,8 +237,6 @@
                       myGameArea.game_started = true
                       socket.on('game',onGameRecevie);
                       
-                      
-
                       var intervalId = setInterval(function(){
                         let msg = {
                             username: "yao tang",
