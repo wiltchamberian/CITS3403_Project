@@ -15,19 +15,17 @@ class DbMgr(SQLAlchemy):
             username = request.form["username"],
             password_hash = request.form["password"],
         )
-        db.session.add(user)
+        self.session.add(user)
         self.commit_s()
 
     def receive_text(self, txt):
         text = Text(
             text = txt
         )
-        db.session.add(text)
+        self.session.add(text)
         self.commit_s()
-        
-# create the extension,db is global
-db = DbMgr()
 
+db = DbMgr()
 
 #table for user info
 class User(db.Model):
