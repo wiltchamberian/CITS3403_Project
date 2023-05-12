@@ -66,7 +66,6 @@
     </head>
     <body>
         <div class="container">
-            <canvas id="myCanvas"></canvas>
             <!--<label id="receive-label">Receiving</label>-->
             <textarea id = "receive-text" rows="4" cols="50"></textarea>
         </div>
@@ -79,9 +78,6 @@
             <button id = "chat-history">chat history</button>
             <!--TEST-->
             <button id = "dft_join" style = "display:None;">click to join default room</button>    
-        </div>
-        <div class="div_buttons">
-            <button id = "start-game">start game</button>
         </div>
         <div class="div_buttons">
           <button class="round-button"></button>
@@ -180,131 +176,6 @@
             var bt2 = document.getElementById('send-button');
             bt2.addEventListener("click", sendText);
 
-            ////////////////////////////////game///////////////////////////////
-            //keys process 
-            var keyState = {};
-            document.addEventListener("keypress", function(event) {
-              keyState[event.key] = true;
-              console.log("key_down")
-            });
-            document.addEventListener("keyup", function(event) {
-              keyState[event.key] = false;
-              console.log("key_up")
-            });
-            function isKeyDown(key) {
-              return keyState[key] == true;
-            }
-
-            var roomId = 0
-            var player = {
-              x:0,
-              y:0,
-              color:'red',
-              state:0 //0:dead 1:alive
-            }
-            var playerId = null
-            var actors = [];
-            var myScore;
-            var myGameArea = {
-                game_started : false,
-                canvas : document.getElementById("myCanvas"),
-                start : function() {
-                    this.canvas.width = 720;
-                    this.canvas.height = 420;
-                    this.context = this.canvas.getContext("2d");
-                    //document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-                    this.frameNo = 0;
-                    //this.interval = setInterval(updateGameArea, 20);
-                    this.width = 10
-                    this.height = 10
-                    this.color = 'red'
-                    },
-                clear : function() {
-                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                },
-                renderAllElements:function(){
-                  ctx = this.context;
-                  ctx.fillStyle = this.color;
-                  //ctx.fillRect(50, 50, this.width, this.height);
-                  for(let i= 0; i< actors.length;++i){
-                      if(actors[i]["state"] == true){
-                          this.renderActor(actors[i])
-                      }
-                  }
-                },
-                renderActor: function(actor){
-                  ctx = this.context;
-                  ctx.fillStyle = this.color;
-                  if(actor["type"]=='player'){
-                    ctx.fillStyle = 'green'
-                  }
-                  ctx.fillRect(actor["x"], actor["y"], this.width, this.height);
-                }
-            }
-            function startGame() {
-                myGameArea.start();
-                socket.emit('join-game', 
-                    { msg: 'join-game',
-                      username: "yao tang",
-                      room: roomId
-                    });
-                    socket.on('join-game-success',function(data){
-                      label_msg("join-game-success")
-                      playerId = data['id']
-                      myGameArea.game_started = true
-                      socket.on('game',onGameRecevie);
-                      
-                      var intervalId = setInterval(function(){
-                        let msg = {
-                            username: "yao tang",
-                            room: roomId,  //rooms are fixed number,
-                            cmds:{ 
-                              name:'yao tang',
-                              type:'move',
-                              id:playerId,
-                              dx:0,
-                              dy:0,
-                            }
-                          };
-                        let d = 10;
-                        if(isKeyDown('w')){
-                          msg.cmds.dy = -d
-                        }
-                        if(isKeyDown('s')){
-                          msg.cmds.dy = d
-                        }
-                        if(isKeyDown('a')){
-                          msg.cmds.dx = -d
-                        }
-                        if(isKeyDown('d')){
-                          msg.cmds.dx = d
-                        }
-                        socket.emit('game-msg', msg);
-
-                      }, 1000/30);
-                      
-                    });
-
-                
-            }
-
-            function onGameRecevie(data){
-              //update game states
-              const myArray = JSON.parse(data);
-              myGameArea.clear();
-              myGameArea.frameNo += 1;
-              for(let i = 0; i < myArray.length; ++i){
-                const actor = myArray[i];
-                let id = actor["id"];
-                let type = actor["type"];
-                actors[id] = actor;
-              }
-              //render
-              myGameArea.renderAllElements();
-            }
-
-            var bt = document.getElementById('start-game');
-            bt.addEventListener("click", startGame);
             bt = document.getElmentById('chat-histroy');
             bt.addEventListener("click", chat_history);
             

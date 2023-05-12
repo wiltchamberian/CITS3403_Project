@@ -1,7 +1,6 @@
 from dbmgr import *
-from game  import *
 from flask import request, render_template
-from settings import socketio,log, users, user_lock, g_dic_sids, g_games, g_game_count, g_user_rooms, app, db
+from settings import socketio,log, users, user_lock, g_dic_sids, g_user_rooms, app, db
 from threading import Thread
 from threading import Lock
 #this code can't pass compile and it seems there are no modules called "module"

@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, send_from_directory
 from flask_socketio import SocketIO
 from threading import Lock
 from dbmgr import db
-from game import Game, socketio, log
 
 #import eventlet
 #eventlet.monkey_patch()
@@ -14,12 +13,9 @@ g_user_rooms = {} #key:username value:room
 g_dic_sids = {} #key:sid value:username
 user_lock = Lock()
 #key:room 
-g_games = []
-g_game_count = 1
 
-#game servers
-for i in range(g_game_count):
-    g_games.append(Game())
+socketio = SocketIO()
+log = print
 
 # create the app
 app = Flask(__name__)
