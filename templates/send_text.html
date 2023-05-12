@@ -76,7 +76,9 @@
         <div class="container">
             <textarea id = "send-text" rows="2" cols="80"></textarea>
             <button id = "send-button">send text</button>
-            <button id = "dft_join">click to join default room</button>    
+            <button id = "chat-history">chat history</button>
+            <!--TEST-->
+            <button id = "dft_join" style = "display:None;">click to join default room</button>    
         </div>
         <div class="div_buttons">
             <button id = "start-game">start game</button>
@@ -108,6 +110,7 @@
                     })}
                     , heartbeatInterval);
             }
+
             //apply for join room
             function join(){
                 socket = io.connect(server_addr);
@@ -157,7 +160,6 @@
               textarea.innerText = text;
             }
             
-
             /**** these are for add listeners ****/
             var textarea = document.getElementById('send-text');
             textarea.addEventListener('keydown', function(event) {
@@ -168,6 +170,10 @@
                 }
               }
             });
+
+            function chat_history(){
+              
+            }
 
             var bt = document.getElementById('dft_join');
             bt.addEventListener("click", join);
@@ -298,8 +304,12 @@
             }
 
             var bt = document.getElementById('start-game');
-                bt.addEventListener("click", startGame);
+            bt.addEventListener("click", startGame);
+            bt = document.getElmentById('chat-histroy');
+            bt.addEventListener("click", chat_history);
             
+            //join the room immediately
+            join()
 
         </script>
     </body>

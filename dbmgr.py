@@ -25,6 +25,10 @@ class DbMgr(SQLAlchemy):
         self.session.add(text)
         self.commit_s()
 
+    #add login checking here
+    def check_login(self):
+        return True
+
 db = DbMgr()
 
 #table for user info
