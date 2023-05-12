@@ -1,4 +1,3 @@
-
 from dbmgr import *
 from game  import *
 from flask import request, render_template

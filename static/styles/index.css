@@ -52,3 +52,38 @@ input[type="submit"] {
 input[type="submit"]:hover {
 	background-color: white;
 }
+
+/*
+The code below is for styling of the side of links.
+*/
+.container{
+	padding-top: 20px; /* Add some top padding to the container */
+  }
+  
+  .row{
+	padding: 10px; /* Add padding to the row */
+  }
+  
+  .float-left {
+	float: left; /* Float the left column to the left */
+  }
+  
+  .col-sm-12{
+	background-color: purple; /* Add a background color to the left column */
+	height: 100%; /* Set the height of the left column to 100% */
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+	/* add a box shadow to the container */
+  }
+  
+  .col-sm-12 a {
+	display: inline-block; /* make the links behave like blocks */
+  	padding: 10px 20px; /* add padding to the links */
+  	border: 1px solid black; /* add a border to the links */
+  	margin: 10px; /* add margin between the links */
+	background-color: #EEE;
+  }
+  
+  .col-sm-12 a:hover {
+	background-color: black; /* Change the background color of the links on hover */
+  }
+  
