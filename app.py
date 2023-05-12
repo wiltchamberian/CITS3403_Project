@@ -9,6 +9,7 @@ from threading import Lock
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import jwt
 import datetime
+import time
 
 
 
@@ -138,7 +139,7 @@ def handle_disconnect():
     print('client disconnected with ID:', client_id)
     name = g_dic_sids[client_id]
     room = g_user_rooms[name]
-    g_games[room].remove_player(name)
+
     if room in socketio.server.manager.rooms:
        if client_id in socketio.server.manager.rooms[room]:
            leave_room(room)
@@ -198,31 +199,6 @@ def on_heart(data):
     add_to_dict(data['user'],time.time())
     #cmds = {"type":"heart" ,"id":data["id"]}
     #game.enqueue_cmds(cmds)
-
-############################game related################################
-@socketio.on('join-game')
-def on_join_game(data):
-    log('join-game')
-    room = data["room"]
-    name = data["username"]
-    #just add, if the players has been in the game, game will process it
-    g_games[room].add_player(name)
-    g_games[room].start(data)
-      
-    
-@socketio.on('leave-game')
-def on_leave_game(data):
-    name =  data['name']
-    del users[name]
-    room = data['room']
-    g_games[room].remove_player(name)      
-
-@socketio.on('game-msg')
-def on_game_message(data):
-    room = data['room']
-    log('game_message')
-    cmds = data['cmds']
-    g_games[room].enqueue_cmds(cmds)
 
 
 if __name__ == "__main__":
