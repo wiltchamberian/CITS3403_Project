@@ -10,11 +10,15 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import jwt
 import datetime
 import time
+import json
 
 
 
 with app.app_context():
     db.create_all()
+    #administrator
+    db.add_default_administrator()
+
     user = User(username='testuser', password_hash='testpassword')
     '''
     db.session.add(user)
@@ -60,7 +64,9 @@ def get_from_dict(key):
 @app.route('/user', methods=['GET', 'POST'])
 def user_create():
   if request.method == "POST":
-      db.create_user(request)
+      username = request.form["username"],
+      password_hash = request.form["password"],
+      db.create_user(username, password_hash)
   return 'data_base'
 
 """
@@ -84,7 +90,7 @@ def login():
          #   return redirect(url_for('templates' , filename='chat.html'))
         if db.check_login():
             users[username] = time.time()
-            return render_template('send_text.html')
+            return render_template('send_text.html', username = username)
         else:
             return render_template('Attemptloginpage.html')
     else:  
@@ -130,6 +136,8 @@ def chat_history():
 def on_connect():
     client_id = request.sid
     log('on_connect')
+    username = request.args.get("username")
+    g_dic_sids[client_id] = username
     emit('connect-success', {'text': 'connected'})
     return "succuess"
 
@@ -137,22 +145,45 @@ def on_connect():
 def handle_disconnect():
     client_id = request.sid
     print('client disconnected with ID:', client_id)
-    name = g_dic_sids[client_id]
-    room = g_user_rooms[name]
+    name = g_dic_sids.get(client_id, None)
+    g_dic_sids.pop(client_id, None)
+    if(name == None):
+        return
+    room = g_user_rooms.get(name,None)
+    if(room == None):
+        return
 
     if room in socketio.server.manager.rooms:
        if client_id in socketio.server.manager.rooms[room]:
            leave_room(room)
     users.pop(name, None)
     g_user_rooms.pop(name, None)
-    g_dic_sids.pop(client_id, None)
+
+@socketio.on('create-room')
+def on_create_room(data):
+    client_id = request.sid
+    log("create-room")
+    userName = data.get("username",None)
+    roomName = data.get("roomname",None)
+    roomName = db.create_room(roomName, userName)
+    emit('create-room', {'roomname': roomName}, room = request.sid)
+
+@socketio.on('room-list')
+def on_room_list(data):
+    client_id = request.sid
+    username = data.get("username",None)
+    keyword = data.get("keyword",None)
+    room_list = db.room_list(keyword)
+    room_list_json = json.dumps(room_list)
+    emit('room-list', room_list_json, room = client_id)
+    log("room-list")
 
 @socketio.on('join')
 def on_join(data):
     client_id = request.sid
     log('on_join')
-    username = data["username"]
-    room = data["room"]
+    username = data.get("username",None)
+    room = data.get("room",None)
 
     if room in socketio.server.manager.rooms:
         if client_id in socketio.server.manager.rooms[room]:
@@ -160,30 +191,33 @@ def on_join(data):
             return
         
     #the user has been in this room
-    if(g_user_rooms.get(username)== room):
+    if(g_user_rooms.get(username,None)== room):
         emit('join-again', {'txt':'in room'},room = room)
         return
     
-    g_dic_sids[client_id] = username
-    g_user_rooms[username] = room
+    #the user is now in another room
+    if(g_user_rooms.get(username,None)!=None):
+        leave_room(room)
+        g_user_rooms.pop(username)
     
+    g_user_rooms[username] = room
     join_room(room)
     emit('join-success', {'text': f'{username} enter {room}'}, room = room)
 
 @socketio.on('leave')
 def on_leave(data):
     log("on_leave")
-    username = data['username']
-    room = data['room']
+    username = data.get('username',None)
+    room = data.get('room',None)
     leave_room(room)
     emit('message', {'text': f'{username} leave {room}'}, room = room)
 
 @socketio.on('message')
 def on_message(data):
     log("on_message!")
-    username = data['username']
-    room = data['room']
-    text = data['text']
+    username = data.get('username',None)
+    room = data.get('room',None)
+    text = data.get('text',None)
     db.receive_text(text)
     emit('message', {'username': username, 'text': text}, room = room)
 
@@ -196,13 +230,14 @@ def on_custom_event(data):
 @socketio.on('heart')
 def on_heart(data):
     log('on_heart')
-    add_to_dict(data['user'],time.time())
+    username = data.get('username',None)
+    add_to_dict(username,time.time())
     #cmds = {"type":"heart" ,"id":data["id"]}
     #game.enqueue_cmds(cmds)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
     #start server by flask-socketio
     log("Flask-SocketIO Start")
     socketio.run(app, host='0.0.0.0',port = 5000)

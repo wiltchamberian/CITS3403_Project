@@ -23,6 +23,23 @@
               cursor: pointer;
               border-radius: 8px;
           }
+          button:active {
+            box-shadow: 0 3px #666; /* 点击时添加凹陷效果 */
+            transform: translateY(-1px); /* 平移4像素，使得按钮有一个下沉的效果 */
+          }
+          .search-button {
+              background: #87CEEB;
+              border: none;
+              color: white;
+              padding: 2px 2px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              cursor: pointer;
+              border-radius: 8px;
+          }
           label {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 16px;
@@ -62,73 +79,291 @@
               cursor: pointer;
               /*box-shadow: 0 2px 6px rgba(0,0,0,0.3);*/
           }
+          #chat-box-div{
+            width:60%;
+          }
+          #chat-box {
+            width:100%;
+            height: 400px;
+            /*overflow: auto;*/
+            margin: 4px 2px;
+            padding-left:40px;
+            border:2px solid #00BFFF;
+            border-radius: 3px;
+            background-color:#FFFFFF;
+            /*display: inline-block;*/
+          }
+          #chat-room-div{
+            padding-left:20px;
+            padding-top:40px;
+            /*overflow: auto;*//*this leads to horizontal scrollbar*/
+            width:30%;
+            /*display: inline-block;*/
+          }
+          #room-list-div{
+            width:100%;
+            height: 309px;
+            margin: 4px 2px;
+            border:2px solid #00BFFF;
+            border-radius: 3px;
+            background-color:#FFFFFF;
+          }
+          .message-div{
+            display: flex;
+            align-items: center;
+          }
+          /* 聊天消息的样式 */
+          .message {
+            background-color: #f0f0f0;
+            padding: 100px;
+            margin-top :20px;
+            margin-bottom: 20px;
+            line-height: 1.5; /* 设置行高为 1.5 */
+          }
+          .avatar{
+            margin-bottom:20px;
+            margin-right: 10px;
+          }
+          /* 新消息的样式 */
+          .new-message {
+            background-color: #FFFFFF;
+            padding: 10px;
+            margin-bottom: 20px;
+            line-height: 1.5; /* 设置行高为 1.5 */
+          }
+          #name-div{
+            display: none
+          }
+          table {
+            margin: auto;
+            width: 100%;
+            border: 2px solid red;
+            border-radius: 5px;
+          }
+          th, td {
+            background-color: #96d4d4;
+          }
+          tr{
+            height: 20px;
+            background-color: #96d4d4;
+            border: 1px solid  rgb(128, 245, 128);
+            border-radius: 2px;
+          }
+          tr:active{
+            background-color: #333;
+            border: 3px solid blue;
+          }
         </style>
     </head>
     <body>
         <div class="container">
             <!--<label id="receive-label">Receiving</label>-->
-            <textarea id = "receive-text" rows="4" cols="50"></textarea>
+            <!--<textarea id = "receive-text" rows="4" cols="50"></textarea>-->
+            
+            <div id="chat-box-div">
+              <label id="chat-box-head">Room:</label>
+              <div id="chat-box"></div>
+            </div>
+            <div id="chat-room-div">
+              <div id="head">
+                <!--<form id="search-form" action="" method="get">-->
+                  <input id = "input" type="text" name="query" placeholder="input keywords">
+                  <button id = "search-button" class = "search-button" type="submit">search</button>
+                <!--</form>-->
+              </div>
+              <div id="room-list-div">
+                <table id= "room-list"></table>
+              </div>
+              
+              <!--<div id= "room-list"></div>-->
+            </div>
+            <div id = "name-div">{{ username }}</div>
         </div>
-        <div class = "container">
+        <!--<div class = "container">
             <label id="send-label">Sending</label>
-        </div>
+        </div>-->
         <div class="container">
             <textarea id = "send-text" rows="2" cols="80"></textarea>
-            <button id = "send-button">send text</button>
-            <button id = "chat-history">chat history</button>
+            <button id = "send-button" >send text</button>
+            <button id = "create-room">create room</button>
+            <button id = "history">chat history</button>
             <!--TEST-->
             <button id = "dft_join" style = "display:None;">click to join default room</button>    
         </div>
         <div class="div_buttons">
           <button class="round-button"></button>
-          <label id = "message">off line</label>
+          <label id = "message">{{username}}off line</label>
         </div>
-        <script>            
+        <script>          
             var server_addr = "http://localhost:5000";
             var socket = null;
             var heartbeatTimer = null;
             var label_message = document.getElementById('message');
+            var messages = []
+            roomId = 0 //default room id
             const state = {
-              connected: false
+              connected: false,
+              selfCreatedRoom: "",
             };
+            var bt = document.getElementById('dft_join');
+            bt.addEventListener("click", join);
+            var sendButton = document.getElementById('send-button');
+            sendButton.addEventListener("click", sendText);
+            var bt3 = document.getElementById('history');
+            bt3.addEventListener("click", chat_history);
+            var search_button = document.getElementById('search-button');
+            search_button.addEventListener("click", function(){
+              let input = document.getElementById("input")
+              const keywords = input.value
+              ask_for_room_list(keywords)
+            });
+            var create_room_btn = document.getElementById('create-room');
+            create_room_btn.addEventListener("click", function(){
+              create_room()
+            })
+            var chatBox = document.getElementById('chat-box');
+            //var textArea = document.getElementById('receive-text');
+            var sendTextArea = document.getElementById('send-text');
+            let userName =  document.getElementById("name-div").innerHTML;
+
+            //for test, open this, 
+            userName = "yao";
+            roomName = userName;
+
+            var roomListBox = document.getElementById("room-list");
+            //alert("Hello, " + userName + "! Welcome to our website!");
+            /*
+            $(function() {
+              $('#search-form').submit(function(event) {
+                event.preventDefault();  // 阻止表单的默认提交行为
+                var query = $('input[name="query"]').val();  // 获取用户输入的关键字
+                // 调用您自己的函数，比如 search(query)
+                ask_for_room_list(query)
+              });
+            });*/
             function label_msg(message){
               var label_message = document.getElementById('message');
-              label_message.innerHTML  = message;
+              label_message.innerHTML  = userName + " " + message;
             }
+
             function send_heart(){
                 // 设置心跳间隔时间
                 let heartbeatInterval = 2000; // 2秒
                 // 发送心跳请求
                 heartbeatTimer = setInterval(() => {
                   socket.emit('heart', { msg: 'heart',
-                      username: "yao tang",
+                      username: userName,
                       room: roomId
                     })}
                     , heartbeatInterval);
             }
 
-            //apply for join room
-            function join(){
-                socket = io.connect(server_addr);
-                socket.on('connect_error', function(error) {
-                  label_msg("connect error!");
-                  console.error('Failed to connect:', error);
-                  socket.close();
+            //connect to server
+            function connect(){
+              socket = io.connect(server_addr, 
+                {
+                  query: {
+                    username: userName
+                  }
                 });
-                socket.on('connect-success', function(data) {
-                    label_msg("connect sucess!");
-                    state.connected = true;
-                    socket.emit('join', 
-                    { msg: 'I want to join the room',
-                      username: "yao tang",
-                      room: roomId
-                    });
-                    socket.on('join-success',function(data){
-                      label_msg("join success!")
-                      socket.on('message',onReceiveText);
-                      //send_heart()
-                    });
-                })
+                
+              socket.on('connect_error', function(error) {
+                label_msg("connect error!");
+                console.error('Failed to connect:', error);
+                socket.close();
+              });
+
+                socket.on('connect-success', function(data){
+                  label_msg("connect sucess!");
+                  state.connected = true;
+                });
+            }
+
+            function add_room_row(roomName){
+              if(roomName != ''){
+                /*
+                let div = document.createElement('div');
+                div.classList.add('room-div');
+                div.innerText = roomName
+                roomListBox.appendChild(div);
+                state.selfCreatedRoom = roomName
+                */
+                //roomListBox.scrollTop = roomListBox.scrollHeight;
+
+                var row = roomListBox.insertRow();
+                row.ondblclick  = function() {
+                  var firstCell = row.cells[0];
+                  const roomName = firstCell.innerHTML;
+                  join(roomName)
+                };
+                row.addEventListener("click", function(){
+
+                });
+
+                var cell1 = row.insertCell(0);
+                cell1.innerHTML = roomName;
+              }
+            }
+
+            // ask for creating room
+            function create_room(){
+              if(state.connected == false){
+                return;
+              }
+              socket.on('create-room',function(data){
+                var roomName = data["roomname"]
+                add_room_row(roomName)
+              });
+              socket.emit('create-room',
+              {
+                username: userName,
+                roomname: roomName,
+              });
+              
+            }
+
+            //ask for room list
+            function ask_for_room_list(keywords){
+              if(state.connected == false){
+                return;
+              }
+              
+              socket.on('room-list',function(data){
+                const room_list = JSON.parse(data);
+                if(room_list == null){
+                  return;
+                }
+                roomListBox.innerHTML = "";
+                for(let i = 0; i < room_list.length; ++i){
+                  add_room_row(room_list[i]);
+                  
+                }
+              });
+
+              socket.emit('room-list', 
+                { 
+                  username: userName,
+                  keyword: keywords
+                });
+
+            }
+
+            //apply for join room
+            function join(roomName){
+                socket.emit('join', 
+                { 
+                  username: userName,
+                  room: roomName
+                });
+                socket.on('join-success',function(data){
+                  label_msg("join success!")
+                  socket.on('message',onReceiveText);
+                  //clear the text and search for history
+                  chatBox.innerHTML = ""
+                  chat_history()
+
+                  //send_heart()
+                });
             }
             
             function sendText(){
@@ -136,34 +371,68 @@
                     label_message.setText("please make long connect to server!")
                     return;
                 }
-                var textarea = document.getElementById('send-text');
-                var inputValue = textarea.value;
+                
+                var inputValue = sendTextArea.value;
+                sendTextArea.value = ""
+                sendTextArea.focus();
+                sendButton.style.background = "grey"
       
                 //create the json to be sent as socketio only
                 //receive json message
                 var message = {
                   msg: 'text message',
-                  username: "yao tang",
+                  username: userName,
                   room: roomId,
                   text: inputValue
                 };
                 socket.emit('message', message);
             }
 
+            
             function onReceiveText(data){
-              var textarea = document.getElementById('receive-text');
-              var text = data["text"]
-              textarea.innerText = text;
+              //var textarea = document.getElementById('receive-text');
+              //var text = data["text"]
+              //textarea.innerText = text;
+              
+              const div = document.createElement('div');
+              div.classList.add('message-div');
+              const avatar = document.createElement('div');
+              avatar.innerText = "avatar";
+              avatar.classList.add('avatar');
+              const txt = document.createElement('div');
+              txt.classList.add('new-message'); 
+              txt.innerText = data["text"];
+              div.appendChild(avatar);
+              div.appendChild(txt)
+              chatBox.appendChild(div);
+              chatBox.scrollTop = chatBox.scrollHeight;
             }
             
             /**** these are for add listeners ****/
-            var textarea = document.getElementById('send-text');
-            textarea.addEventListener('keydown', function(event) {
-              if (event.target === textarea) { 
+            sendTextArea.addEventListener('keydown', function(event) {
+              if (event.target === sendTextArea) { 
                 if (event.keyCode === 13) {
                   event.preventDefault();
                   sendText()
                 }
+              }
+              
+            });
+            
+            var oriBackground = sendButton.style.background;
+            sendButton.style.background = "grey"
+            sendTextArea.addEventListener('input', function(event) {
+              // 检测文本框是否为空
+              var bt = document.getElementById('send-button');
+              var oldbackground = null;
+              if (sendTextArea.value.trim() === '') {
+                // 如果文本框为空，则禁用发送按钮
+                bt.disabled = true;
+                bt.style.background = "grey"
+              } else {
+                // 如果文本框不为空，则启用发送按钮
+                bt.disabled = false;
+                bt.style.background = oriBackground;
               }
             });
 
@@ -171,16 +440,7 @@
               
             }
 
-            var bt = document.getElementById('dft_join');
-            bt.addEventListener("click", join);
-            var bt2 = document.getElementById('send-button');
-            bt2.addEventListener("click", sendText);
-
-            bt = document.getElmentById('chat-histroy');
-            bt.addEventListener("click", chat_history);
-            
-            //join the room immediately
-            join()
+            connect()
 
         </script>
     </body>
