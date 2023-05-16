@@ -19,7 +19,7 @@ with app.app_context():
     #administrator
     db.add_default_administrator()
 
-    user = User(username='testuser', password_hash='testpassword')
+    user = User(username='testuser', password='testpassword')
     '''
     db.session.add(user)
     db.session.commit()
@@ -35,7 +35,7 @@ with app.app_context():
     db.session.add_all(messages)
     db.session.commit()
     '''
-    
+
     #
     db_init()
 

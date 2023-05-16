@@ -19,7 +19,7 @@ class DbMgr(SQLAlchemy):
     def create_user(self, username, password_hash):
         user = User(
             username = username,
-            password_hash = password_hash,
+            password = password_hash,
         )
         self.session.add(user)
         self.commit_s()
@@ -69,13 +69,12 @@ class DbMgr(SQLAlchemy):
 
 db = DbMgr()
 
-
-#table for user info
+# Define the User model
 class User(db.Model):
     __tablename__ = 'User'
-    id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String, unique = True, nullable = False)
-    password_hash = db.Column(db.String(128))
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(80))
 
 #table for text
 class Text(db.Model):

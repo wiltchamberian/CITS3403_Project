@@ -12,16 +12,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 
 # Create SQLAlchemy database instance #the db has existed in so just import
 #db = SQLAlchemy(app)
+from dbmgr import User
 from dbmgr import db
 
 # Create Flask-Migrate instance
 migrate = Migrate(app, db)
 
-# Define the User model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(80))
 
 # Define the Message model
 class Message(db.Model):
