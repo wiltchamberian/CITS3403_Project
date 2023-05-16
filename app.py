@@ -12,7 +12,7 @@ import datetime
 import time
 import json
 
-
+from db import db_init
 
 with app.app_context():
     db.create_all()
@@ -35,7 +35,9 @@ with app.app_context():
     db.session.add_all(messages)
     db.session.commit()
     '''
-
+    
+    #
+    db_init()
 
 def check_heart():
     return
