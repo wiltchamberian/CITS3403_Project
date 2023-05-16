@@ -1,46 +1,79 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import SQLAlchemyError
+from flask_migrate import Migrate
+from datetime import datetime
 
-class DbMgr(SQLAlchemy): 
-    def commit_s(self):
-        try:
-            self.session.commit()
-        except SQLAlchemyError as e:
-            print('SQLAlchemyError:', e)
-            self.session.rollback()
+# Create Flask application instance
+app = Flask(__name__)
 
-    def create_user(self, request):
-        user = User(
-            username = request.form["username"],
-            password_hash = request.form["password"],
-        )
-        self.session.add(user)
-        self.commit_s()
+# Configure the SQLAlchemy database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 
-    def receive_text(self, txt):
-        text = Text(
-            text = txt
-        )
-        self.session.add(text)
-        self.commit_s()
+# Create SQLAlchemy database instance
+db = SQLAlchemy(app)
 
-    #add login checking here
-    def check_login(self):
-        return True
+# Create Flask-Migrate instance
+migrate = Migrate(app, db)
 
-db = DbMgr()
-
-#table for user info
+# Define the User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(80))
 
-#table for text
-class Text(db.Model):
+# Define the Message model
+class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String, unique=False, nullable=False)
+    username = db.Column(db.String(80))
+    message = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
+    def __init__(self, username, message, timestamp=None):
+        self.username = username
+        self.message = message
+        if timestamp is not None:
+            self.timestamp = timestamp
 
-            
+# Define sample data to be loaded into the database
+user_data = [
+    { 'username': 'alice',  'password': 'fdMD8FMp' },
+    { 'username': 'bob',    'password': '63dCUTqz' },
+    { 'username': 'chloe',  'password': 'ZDBfv9h8'},
+    { 'username': 'dan',    'password': '7hQYa7kt' },
+    { 'username': 'eve',    'password': 'xSrh3xXZ' }
+]
+message_data = [
+    { 'username': 'alice', 'timestamp': datetime(2023, 5, 22, 9, 0),
+        'message': 'hey guys whats the best pizza topping' },
+    { 'username': 'bob', 'timestamp': datetime(2023, 5, 22, 9, 1),
+        'message': 'definitely pepperoni' },
+    { 'username': 'eve', 'timestamp': datetime(2023, 5, 22, 9, 2),
+        'message': 'nah pineapple all the way' },
+    { 'username': 'alice', 'timestamp': datetime(2023, 5, 22, 9, 3),
+        'message': 'ewww pineapple' },
+    { 'username': 'bob', 'timestamp': datetime(2023, 5, 22, 9, 4),
+        'message': 'thats a crime' },
+    { 'username': 'eve', 'timestamp': datetime(2023, 5, 22, 9, 5),
+        'message': 'what can i say its simply the best' }
+]
+
+with app.app_context():
+    # Create the tables if they don't exist
+    db.create_all()
+
+    # Add the users to the User table
+    for item in user_data:
+        user = User(username=item['username'], password=item['password'])
+        db.session.add(user)
+    db.session.commit()
+    print("Users added successfully")
+
+    # Load sample data into the database
+    for item in message_data:
+        message = Message(username=item['username'], message=item['message'], timestamp=item['timestamp'])
+        db.session.add(message)
+    db.session.commit()
+    print("Messages loaded successfully")
+
+    # Retrieve all messages from the database
+    messages = Message.query.all()
