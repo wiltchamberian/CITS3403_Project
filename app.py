@@ -1,12 +1,15 @@
 from dbmgr import *
 from flask import request, render_template
-from settings import socketio,log, users, user_lock, g_dic_sids, g_user_rooms, app, db
+from settings import socketio,log, g_users, user_lock, g_dic_sids, g_user_rooms, app, db, UserState, UserInfo
 from threading import Thread
 from threading import Lock
 #this code can't pass compile and it seems there are no modules called "module"
 #from module import check_login
 #from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room, leave_room
+
+
+
 import jwt
 import datetime
 import time
@@ -45,9 +48,9 @@ def check_heart():
     while True:
         now = time.time()
         with user_lock:
-            for user, time in list(users.items()):
-                if (now - users[user] > HEART_INTERVAL):
-                    del users[user]
+            for user, time in list(g_users.items()):
+                if (now - g_users[user] > HEART_INTERVAL):
+                    del g_users[user]
                     game.remove_player(user)
     
 heart_thread = Thread(target = check_heart)
@@ -56,11 +59,11 @@ heart_thread.start()
 
 def add_to_dict(key, value):
     with user_lock:
-        users[key] = value
+        g_users[key] = value
 
 def get_from_dict(key):
     with user_lock:
-        return users.get(key)
+        return g_users.get(key)
 
 
 @app.route('/user', methods=['GET', 'POST'])
@@ -91,7 +94,11 @@ def login():
         #if(check_login()):
          #   return redirect(url_for('templates' , filename='chat.html'))
         if db.check_login():
-            users[username] = time.time()
+            if(g_users.get(username) != None):
+                return render_template('Attemptloginpage.html')
+            g_users[username] = UserInfo()
+            g_users[username].time = time.time()
+            g_users[username].state = UserState.LOGGED
             return render_template('send_text.html', username = username)
         else:
             return render_template('Attemptloginpage.html')
@@ -139,7 +146,17 @@ def on_connect():
     client_id = request.sid
     log('on_connect')
     username = request.args.get("username")
+    info = g_users.get(username,None)
+    if(info != None):
+        if info.state == UserState.LOGGED:
+            emit('connect-failed', {'msg':'connected before'})
+            return 
+        
+    #if not loggined but connect directly, allow to login for covenient...
     g_dic_sids[client_id] = username
+    g_users[username] = UserInfo()
+    g_users[username].state = UserState.LOGGED
+    g_users[username].time = time.time()
     emit('connect-success', {'text': 'connected'})
     return "succuess"
 
@@ -151,14 +168,14 @@ def handle_disconnect():
     g_dic_sids.pop(client_id, None)
     if(name == None):
         return
+    
     room = g_user_rooms.get(name,None)
-    if(room == None):
-        return
+    if(room != None):
+        if room in socketio.server.manager.rooms:
+          if client_id in socketio.server.manager.rooms[room]:
+              leave_room(room)
 
-    if room in socketio.server.manager.rooms:
-       if client_id in socketio.server.manager.rooms[room]:
-           leave_room(room)
-    users.pop(name, None)
+    g_users.pop(name, None)
     g_user_rooms.pop(name, None)
 
 @socketio.on('create-room')
@@ -204,7 +221,7 @@ def on_join(data):
     
     g_user_rooms[username] = room
     join_room(room)
-    emit('join-success', {'text': f'{username} enter {room}'}, room = room)
+    emit('join-success', {'text': f'{username} enter {room}', 'room': room}, room = room)
 
 @socketio.on('leave')
 def on_leave(data):
@@ -241,5 +258,8 @@ def on_heart(data):
 if __name__ == "__main__":
     #app.run(debug=True)
     #start server by flask-socketio
-    log("Flask-SocketIO Start")
-    socketio.run(app, host='0.0.0.0',port = 5000)
+    
+    host = app.config["HOST"]
+    port = app.config["PORT"]
+    log("Flask-SocketIO Start, host:{0}, port:{1}".format(host,port))
+    socketio.run(app, host=host,port = port)
