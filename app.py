@@ -106,6 +106,20 @@ def login():
         return render_template('Attemptloginpage.html')
 
 
+@app.route('/register', methods=['GET','POST'])
+def register():
+    if(request.method == 'POST'):
+        username = request.form["username"]
+        password = request.form["password"]
+        check = request.form["check"]
+        if(password != check):
+            return redirect(url_for('register'))
+        else:
+            user = User(username= 'username', password='password')
+            db.add(user)
+            db.commit_s()
+            return redirect(url_for('login'))
+    
 def protected():
   token = request.headers.get('Authorization')
   # check token
