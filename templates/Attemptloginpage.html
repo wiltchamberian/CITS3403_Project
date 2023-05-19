@@ -1,6 +1,5 @@
 <!DOCTYPE html > 
 <html lang = "en">
-{% extends "base.html" %}
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
@@ -23,27 +22,21 @@
         </div>
         <div class="container"> 
             <h1>Login Form</h1>
-            <p1>
-            For this project you are required to build a text-based chat application, meaning the user of the application enters text or similar prompts, and recieves responses, but you may interpret the concept with a good deal of flexibility:
-            The application could be a traditional Chat service, perhaps linking people looking for Web Design help, and experts offering help;
-            The application could use a chatbot mechanism similar to Eliza;
-            The application could make use of a 3rd party service like GPT orWolfram Alpha;
-            The application could use chat in a larger context, like a service for online role playing games or in Twenty Questions type games;
-            You could use chat as a game mechanism like the Monkey Island games.
-            </p1>
         </div>
     <br>
     <br>
-
-        <!-- Think I want the /login page to take in the username and password and so will switch-->  
-        <form action = "http://127.0.0.1:5000//login" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-    
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-    
-            <input type="submit" value="Login">
-        </form>
+        <div class="container">
+            <!-- Think I want the /login page to take in the username and password and so will switch-->  
+            <form action = "http://127.0.0.1:5000//login" method="post">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+        
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+        
+                <input type="submit" value="Login">
+            </form>
+            <p> Not registred? <a href="{{ url_for('register') }}">Click to Register!</a></p>
+        </div>
     </body>
 </html>
