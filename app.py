@@ -8,12 +8,11 @@ from threading import Lock
 #from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
-
-
 import jwt
 import datetime
 import time
 import json
+import os
 
 from db import db_init
 
@@ -261,5 +260,6 @@ if __name__ == "__main__":
     
     host = app.config["HOST"]
     port = app.config["PORT"]
+    port = int(os.environ.get("PORT", port)) 
     log("Flask-SocketIO Start, host:{0}, port:{1}".format(host,port))
     socketio.run(app, host=host,port = port, allow_unsafe_werkzeug = True)
