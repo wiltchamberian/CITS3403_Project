@@ -281,7 +281,7 @@ if __name__ == "__main__":
     host = app.config["HOST"]
     port = app.config["PORT"]
 
-    host = "https://quiet-ocean-05389.herokuapp.com";
+    #host = "https://quiet-ocean-05389.herokuapp.com";
     port = int(os.environ.get("PORT", port)) 
     log("Flask-SocketIO Start, host:{0}, port:{1}".format(host,port))
     socketio.run(app, host=host,port = port, allow_unsafe_werkzeug = True)
