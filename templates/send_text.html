@@ -209,7 +209,7 @@
                 <!--</form>-->
               </div>
               <div id="room-list-div">
-                <div id="tooltip">hint</div>
+                <div id="tooltip">join-success</div>
                 <table id= "room-list"></table>
               </div>
               
@@ -441,15 +441,25 @@
                   socket.on('message',onReceiveText);
 
                   tooltip.style.display = "block";
+                  tooltip.innerHTML = "join success"
                   setTimeout(function() {
                     tooltip.style.display = "none";
-                  }, 2000);
+                  }, 1000);
                   
                   //clear the text and search for history
                   chatBox.innerHTML = ""
                   chat_history()
 
                   //send_heart()
+                });
+                socket.off('join-failed')
+                socket.on('join-failed',function(data){
+                  label_msg("join failed")
+                  tooltip.style.display = "block";
+                  tooltip.innerHTML = "join failed"
+                  setTimeout(function() {
+                    tooltip.style.display = "none";
+                  }, 1000);
                 });
             }
             
