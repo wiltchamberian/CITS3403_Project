@@ -262,4 +262,4 @@ if __name__ == "__main__":
     host = app.config["HOST"]
     port = app.config["PORT"]
     log("Flask-SocketIO Start, host:{0}, port:{1}".format(host,port))
-    socketio.run(app, host=host,port = port)
+    socketio.run(app, host=host,port = port, allow_unsafe_werkzeug = True)
