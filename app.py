@@ -140,7 +140,13 @@ def save_text():
 @app.route('/')
 def index():
     log("index!")
-    return render_template('send_text.html')
+    address = ''
+    if app.env == 'production':
+        address = 'https://quiet-ocean-05389.herokuapp.com'  # Heroku 公共域名
+    else:
+        address = app.config["HOST"]  # 本地开发环境地址
+    log("adderss:", address)
+    return render_template('send_text.html', server_ip = address)
 
 #this is for testing
 @app.route('/debug',methods = ['POST', 'GET'])
@@ -274,6 +280,8 @@ if __name__ == "__main__":
     
     host = app.config["HOST"]
     port = app.config["PORT"]
+
+    host = "https://quiet-ocean-05389.herokuapp.com";
     port = int(os.environ.get("PORT", port)) 
     log("Flask-SocketIO Start, host:{0}, port:{1}".format(host,port))
     socketio.run(app, host=host,port = port, allow_unsafe_werkzeug = True)

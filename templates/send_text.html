@@ -235,7 +235,11 @@
         <script>        
             let lastHighlightedRow = null;  
             var tooltip = document.getElementById("tooltip");
-            var server_addr = "http://localhost:5000";
+            //var serverAddr = "http://localhost:5000";
+            var serverAddr = "{{ server_ip }}";
+            if(serverAddr == "{{ server_ip }}"){
+              serverAddr = "https://quiet-ocean-05389.herokuapp.com"
+            }
             var socket = null;
             var heartbeatTimer = null;
             var labelMessage = document.getElementById('message');
@@ -301,7 +305,7 @@
 
             //connect to server
             function connect(){
-              socket = io.connect(server_addr, 
+              socket = io.connect(serverAddr, 
                 {
                   query: {
                     username: userName
