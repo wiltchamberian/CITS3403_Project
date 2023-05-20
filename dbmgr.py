@@ -32,8 +32,22 @@ class DbMgr(SQLAlchemy):
         self.commit_s()
 
     #add login checking here
-    def check_login(self):
+    def check_login(self, user_info, password_info):
+        #Gets all info from usertable
+        users = User.query.all()
+        for user in users:
+            if(user_info == user.username):
+                if(password_info == user.password):
+                    return True
+        return False
+    
+    def check_unique(self, username):
+        users = User.query.all()
+        for user in users:
+            if(username == user.username):
+                return False
         return True
+
     
     def create_room(self, roomName, userName):
         room = Room(
