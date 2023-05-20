@@ -33,6 +33,7 @@ class DbMgr(SQLAlchemy):
 
     #add login checking here
     def check_login(self):
+        
         return True
     
     def create_room(self, roomName, userName):

@@ -22,23 +22,7 @@ with app.app_context():
     db.add_default_administrator()
 
     user = User(username='testuser', password='testpassword')
-    '''
-    db.session.add(user)
-    db.session.commit()
-    # Create some dummy messages
-    messages = [
-      Text(username='user1', text='Hello', timestamp='2022-05-09 10:00:00'),
-      Text(username='user2', text='Hi there', timestamp='2022-05-09 10:01:00'),
-      Text(username='user1', text='How are you?', timestamp='2022-05-09 10:02:00'),
-      Text(username='user2', text='I am good, thanks!', timestamp='2022-05-09 10:03:00')
-    ]
 
-    # Add the messages to the database
-    db.session.add_all(messages)
-    db.session.commit()
-    '''
-
-    #
     db_init()
 
 def check_heart():
@@ -73,16 +57,6 @@ def user_create():
       db.create_user(username, password_hash)
   return 'data_base'
 
-"""
-@app.route('/login', methods= ['POST'])
-def user_login():
-  # create token
-  username = request.form["username"]
-  password = request.form["password"]
-  token = jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
-  return {'token': token.decode('utf-8')}
-"""
-
 @app.route('/login_page', methods = ['GET'])
 def login_page():
     return render_template('Attemptloginpage.html', \
@@ -98,15 +72,19 @@ def login():
     if(username == None or password == None):
         username = request.form["username"]
         password = request.form["password"]
-    #if(check_login()):
-      #   return redirect(url_for('templates' , filename='chat.html'))
+
+    log("login")
+    log("username:"+username)
+
     if db.check_login():
         if(g_users.get(username) != None):
             return render_template('Attemptloginpage.html')
         g_users[username] = UserInfo()
         g_users[username].time = time.time()
         g_users[username].state = UserState.LOGGED
-        return render_template('send_text.html', username = username)
+        history = url_for('chat_hisotry_page')
+        log(history)
+        return render_template('send_text.html', username = username, history = history)
     else:
         return render_template('Attemptloginpage.html')
 
@@ -158,17 +136,26 @@ def save_text():
   #deliver the text to members in the room
   return res
 
+#open chat_history web page
+@app.route('/chat-history-page', methods=['POST', 'GET'])
+def chat_hisotry_page():
+    log("chat-history-page")
+    #return render_template('chat_history.html',history = url_for('chat_history'),\
+    #                        index = url_for('index'),\
+    #                        loggin = url_for('login_page'),\
+    #                        register = url_for('register_page'))
+    return render_template('chat_history.html', chat_history = url_for('chat_history')\
+                           ,messages = [])
 
-#this is for testing
-@app.route('/debug',methods = ['POST', 'GET'])
-def debug():
-  return "Debug"
-
-@app.route('/chat_history')
+#for search the chat history
+@app.route('/chat_history',methods = ['GET','POST'])
 def chat_history():
+  log("chat_history")
   current_user = User.query.filter_by(username='testuser').first()
   messages = Text.query.filter_by(username=current_user.username).all()
-  return render_template('chat_history.html', messages=messages)
+  return render_template('chat_history.html' \
+                         ,chat_history = url_for('chat_history')\
+                         ,messages=messages)
 
 #for chatting, use long-connect
 @socketio.on('connect')
