@@ -45,11 +45,8 @@
     </style>
   </head>
 <body>
-    {% extends "base.html" %}
-
-    {% block content %}
     <h1>Chat History</h1>
-    <form action="{{ url_for('search_history') }}" method="post">
+    <form action="{{chat_history}}" method="post">  
         <input type="text" name="search_query" placeholder="Search chat history...">
         <button type="submit">Search</button>
     </form>
@@ -71,7 +68,6 @@
         {% endfor %}
       </tbody>
     </table>
-    {% endblock %}
 </body>
 </html>
 

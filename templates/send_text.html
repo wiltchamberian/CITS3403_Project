@@ -223,10 +223,8 @@
         <div class="container">
             <textarea id = "input-area" rows="2" cols="80"></textarea>
             <button id = "send-button" >send text</button>
-            <!--<button id = "create-room">create room</button>-->
-            <button id = "history">chat history</button>
-            <!--TEST-->
-            <button id = "dft_join" style = "display:None;">click to join default room</button>    
+            <!--<button id = "history">chat history</button>-->
+            <a id = "history" href="{{ history }}">chat history</a>
         </div>
         <div class="div_buttons">
           <button id="round-button"></button>
@@ -255,7 +253,13 @@
             sendBtn.addEventListener("click", sendText);
             sendBtn.disabled = true
             var historyBtn = document.getElementById('history');
-            historyBtn.addEventListener("click", chat_history);
+            var histroyLink = historyBtn.getAttribute("href");
+            
+            if(histroyLink == "{{ history }}"){
+              histroyLink = serverAddr + '/chat-history-page';
+            }
+            //historyBtn.addEventListener("click", chat_history);
+            
             var searchBtn = document.getElementById('search-button');
             var searchArea = document.getElementById('search-area');
             searchBtn.addEventListener("click", function(){
@@ -554,7 +558,26 @@
             });
 
             function chat_history(){
-              
+              fetch(serverAddr + '/chat-history-page', {
+                method: 'GET',
+              })
+                .then(response => {
+                  if (response.ok) {
+                    // 请求成功处理
+                    return response.text();
+                  } else {
+                    // 请求失败处理
+                    throw new Error('Request failed');
+                  }
+                })
+                .then(data => {
+                  // 处理返回的数据
+                  console.log(data);
+                })
+                .catch(error => {
+                  // 错误处理
+                  console.error(error);
+                });
             }
 
             connect()
