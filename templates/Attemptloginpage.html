@@ -14,9 +14,8 @@
         <div class="container Login">
             <div class="row Login">
                 <div class="col-sm-12 float-left Login">
-                    <a href="{{ url_for('index')}}">Home</a>
-                    <a href="{{ url_for('login')}}">Login</a>
-                    <a href="{{ url_for('user')}}">User</a>
+                    <a href="{{ login }}">Login</a>
+                    <a href="{{ register }}">Register</a>
                 </div>
             </div>
         </div>
@@ -36,7 +35,7 @@
         
                 <input type="submit" value="Login">
             </form>
-            <p> Not registred? <a href="{{ url_for('register') }}">Click to Register!</a></p>
+            <p> Not registred? <a href="{{ register }}">Click to Register!</a></p>
         </div>
     </body>
 </html>

@@ -1,5 +1,5 @@
 from dbmgr import *
-from flask import request, render_template
+from flask import request, render_template, url_for, redirect, session
 from settings import socketio,log, g_users, user_lock, g_dic_sids, g_user_rooms, app, db, UserState, UserInfo
 from threading import Thread
 from threading import Lock
@@ -83,41 +83,63 @@ def user_login():
   return {'token': token.decode('utf-8')}
 """
 
+@app.route('/login_page', methods = ['GET'])
+def login_page():
+    return render_template('Attemptloginpage.html', \
+                            login = url_for('login_page'), \
+                            register = url_for('register_page'))
+
 #code for redirecting from login page, to chat page given correct credentials.
 #check_login() is a function checking if the credentials are correct.
 @app.route('/login', methods=['GET','POST'])
 def login():
-    if(request.method == 'POST'):
+    username = session.get('username',None)
+    password = session.get('password',None)
+    if(username == None or password == None):
         username = request.form["username"]
         password = request.form["password"]
-        #if(check_login()):
-         #   return redirect(url_for('templates' , filename='chat.html'))
-        if db.check_login():
-            if(g_users.get(username) != None):
-                return render_template('Attemptloginpage.html')
-            g_users[username] = UserInfo()
-            g_users[username].time = time.time()
-            g_users[username].state = UserState.LOGGED
-            return render_template('send_text.html', username = username)
-        else:
+    #if(check_login()):
+      #   return redirect(url_for('templates' , filename='chat.html'))
+    if db.check_login():
+        if(g_users.get(username) != None):
             return render_template('Attemptloginpage.html')
-    else:  
+        g_users[username] = UserInfo()
+        g_users[username].time = time.time()
+        g_users[username].state = UserState.LOGGED
+        return render_template('send_text.html', username = username)
+    else:
         return render_template('Attemptloginpage.html')
 
+@app.route('/register_page', methods = ['GET'])
+def register_page():
+    return render_template('Register.html', register = url_for('register'))
 
 @app.route('/register', methods=['GET','POST'])
 def register():
-    if(request.method == 'POST'):
-        username = request.form["username"]
-        password = request.form["password"]
-        check = request.form["check"]
-        if(password != check):
-            return redirect(url_for('register'))
-        else:
-            user = User(username= 'username', password='password')
-            db.add(user)
-            db.commit_s()
-            return redirect(url_for('login'))
+    username = request.form["username"]
+    password = request.form["password"]
+    check = request.form["check"]
+    if(password != check):
+        return redirect(url_for('register_page'))
+    else:
+        db.create_user('username', 'password')
+        session['username'] = username
+        session['password'] = password
+        return redirect(url_for('login'))
+    
+@app.route('/')
+def index():
+    log("index!")
+    address = ''
+    if app.debug == 'production':
+        address = 'https://quiet-ocean-05389.herokuapp.com'  # Heroku 公共域名
+    else:
+        address = app.config["HOST"]  # 本地开发环境地址
+    log("adderss:", address)
+    #return render_template('send_text.html', server_ip = address)
+    return render_template('Attemptloginpage.html', \
+                            login = url_for('login_page'), \
+                            register = url_for('register_page'))
     
 def protected():
   token = request.headers.get('Authorization')
@@ -134,19 +156,8 @@ def protected():
 def save_text():
   res = db.receive_text(request)
   #deliver the text to members in the room
-  
   return res
 
-@app.route('/')
-def index():
-    log("index!")
-    address = ''
-    if app.env == 'production':
-        address = 'https://quiet-ocean-05389.herokuapp.com'  # Heroku 公共域名
-    else:
-        address = app.config["HOST"]  # 本地开发环境地址
-    log("adderss:", address)
-    return render_template('send_text.html', server_ip = address)
 
 #this is for testing
 @app.route('/debug',methods = ['POST', 'GET'])
