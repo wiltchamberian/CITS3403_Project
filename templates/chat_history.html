@@ -42,12 +42,16 @@
       button[type="submit"]:hover {
         background-color: #45a049;
       }
+      input[type="hidden"]{
+        display: none;
+      }
     </style>
   </head>
 <body>
     <h1>Chat History</h1>
     <form action="{{chat_history}}" method="post">  
         <input type="text" name="search_query" placeholder="Search chat history...">
+        <input type="hidden" name="username" value="{{ username }}" >
         <button type="submit">Search</button>
     </form>
     <table>

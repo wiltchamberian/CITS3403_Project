@@ -14,23 +14,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 #db = SQLAlchemy(app)
 from dbmgr import User
 from dbmgr import db
+from dbmgr import Message
 
 # Create Flask-Migrate instance
 migrate = Migrate(app, db)
-
-
-# Define the Message model
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80))
-    message = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
-
-    def __init__(self, username, message, timestamp=None):
-        self.username = username
-        self.message = message
-        if timestamp is not None:
-            self.timestamp = timestamp
 
 # Define sample data to be loaded into the database
 user_data = [

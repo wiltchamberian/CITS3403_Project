@@ -224,7 +224,7 @@
             <textarea id = "input-area" rows="2" cols="80"></textarea>
             <button id = "send-button" >send text</button>
             <!--<button id = "history">chat history</button>-->
-            <a id = "history" href="{{ history }}">chat history</a>
+            <a id = "history" href="{{ history }}?username={{ username }}">chat history</a>
         </div>
         <div class="div_buttons">
           <button id="round-button"></button>
@@ -276,8 +276,8 @@
             let userName =  document.getElementById("name-div").innerHTML;
 
             //for test, open this, 
-            userName = "yao";
-            roomName = userName;
+            //userName = "yao";
+            //roomName = userName;
 
             var roomListBox = document.getElementById("room-list");
             //alert("Hello, " + userName + "! Welcome to our website!");

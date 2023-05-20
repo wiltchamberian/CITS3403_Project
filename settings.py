@@ -8,7 +8,8 @@ from enum import Enum
 class UserState(Enum):
    UNDEFINED = 0
    LOGGED = 1
-   UNLOGGED = 2
+   CONNECTED = 2
+   UNLOGGED = 3
 
 class UserInfo:
    def __init__(self):

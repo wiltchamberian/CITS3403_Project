@@ -73,12 +73,18 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
+    #reset, session may not suitable, but works TODO
+    session['username'] = None
+    session['password'] = None
+
     log("login")
     log("username:"+username)
 
-    if db.check_login():
+    if db.check_login(username, password):
         if(g_users.get(username) != None):
-            return render_template('Attemptloginpage.html')
+            return render_template('Attemptloginpage.html', \
+                        login = url_for('login_page'), \
+                        register = url_for('register_page'))
         g_users[username] = UserInfo()
         g_users[username].time = time.time()
         g_users[username].state = UserState.LOGGED
@@ -86,7 +92,9 @@ def login():
         log(history)
         return render_template('send_text.html', username = username, history = history)
     else:
-        return render_template('Attemptloginpage.html')
+        return render_template('Attemptloginpage.html', \
+                                login = url_for('login_page'), \
+                                register = url_for('register_page'))
 
 @app.route('/register_page', methods = ['GET'])
 def register_page():
@@ -100,7 +108,9 @@ def register():
     if(password != check):
         return redirect(url_for('register_page'))
     else:
-        db.create_user('username', 'password')
+        ok = db.create_user(username, password)
+        if ok == False:
+            return redirect(url_for('register_page'))
         session['username'] = username
         session['password'] = password
         return redirect(url_for('login'))
@@ -144,15 +154,22 @@ def chat_hisotry_page():
     #                        index = url_for('index'),\
     #                        loggin = url_for('login_page'),\
     #                        register = url_for('register_page'))
+
+    username = request.args.get("username",None)
     return render_template('chat_history.html', chat_history = url_for('chat_history')\
-                           ,messages = [])
+                           ,messages = []\
+                           , username = username)
 
 #for search the chat history
 @app.route('/chat_history',methods = ['GET','POST'])
 def chat_history():
   log("chat_history")
-  current_user = User.query.filter_by(username='testuser').first()
-  messages = Text.query.filter_by(username=current_user.username).all()
+  query = request.form['search_query']
+  username = request.form['username']
+  current_user = User.query.filter_by(username= username).first()
+  messages = []
+  if current_user!=None:
+      messages = Message.query.filter_by(username=current_user.username).all()
   return render_template('chat_history.html' \
                          ,chat_history = url_for('chat_history')\
                          ,messages=messages)
@@ -166,7 +183,12 @@ def on_connect():
     info = g_users.get(username,None)
     if(info != None):
         if info.state == UserState.LOGGED:
+            info.state = UserState.CONNECTED
+        elif info.state == UserState.CONNECTED:
             emit('connect-failed', {'msg':'connected before'})
+            return 
+        elif info.state == UserState.UNDEFINED:
+            emit('connect-failed', {'msg':'not logged'})
             return 
         
     #if not loggined but connect directly, allow to login for covenient...
@@ -254,7 +276,12 @@ def on_message(data):
     username = data.get('username',None)
     room = data.get('room',None)
     text = data.get('text',None)
-    db.receive_text(text)
+
+    item = {}
+    item["username"] = username 
+    item["message"] = text
+    item["timestamp"] = datetime.datetime.now();
+    ok = db.add_messages([item])
     emit('message', {'username': username, 'text': text}, room = room)
 
 @socketio.on('custom_event')

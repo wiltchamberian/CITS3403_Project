@@ -22,7 +22,7 @@ class DbMgr(SQLAlchemy):
             password = password_hash,
         )
         self.session.add(user)
-        self.commit_s()
+        return self.commit_s()
 
     def receive_text(self, txt):
         text = Text(
@@ -31,9 +31,18 @@ class DbMgr(SQLAlchemy):
         self.session.add(text)
         self.commit_s()
 
+    def add_messages(self, message_data):
+        # Load sample data into the database
+        for item in message_data:
+            message = Message(username=item['username'], message=item['message'], timestamp=item['timestamp'])
+            self.session.add(message)
+        return self.commit_s()
+
     #add login checking here
-    def check_login(self):
-        
+    def check_login(self, userName, password):
+        users = User.query.filter_by(username=userName).all()
+        if(len(users) == 0):
+            return False
         return True
     
     def create_room(self, roomName, userName):
@@ -80,6 +89,7 @@ class User(db.Model):
 #table for text
 class Text(db.Model):
     id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(80), unique=False, nullable=False)
     text = db.Column(db.String, unique = False, nullable = False)
 
 #table for rooms
@@ -88,3 +98,15 @@ class Room(db.Model):
     roomName = db.Column(db.String, unique = True, nullable = False)
     userName = db.Column(db.String, ForeignKey('User.username'))
             
+# Define the Message model
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    message = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __init__(self, username, message, timestamp=None):
+        self.username = username
+        self.message = message
+        if timestamp is not None:
+            self.timestamp = timestamp
