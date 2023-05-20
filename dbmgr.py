@@ -44,6 +44,7 @@ class DbMgr(SQLAlchemy):
         if(len(users) == 0):
             return False
         return True
+
     
     def create_room(self, roomName, userName):
         room = Room(

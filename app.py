@@ -57,6 +57,16 @@ def user_create():
       db.create_user(username, password_hash)
   return 'data_base'
 
+"""
+@app.route('/login', methods= ['POST'])
+def user_login():
+  # create token
+  username = request.form["username"]
+  password = request.form["password"]
+  token = jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
+  return {'token': token.decode('utf-8')}
+"""
+
 @app.route('/login_page', methods = ['GET'])
 def login_page():
     return render_template('Attemptloginpage.html', \
@@ -107,6 +117,8 @@ def register():
     check = request.form["check"]
     if(password != check):
         return redirect(url_for('register_page'))
+    #elif(db.check_unique(username)):
+        #return redirect(url_for('register_page'))
     else:
         ok = db.create_user(username, password)
         if ok == False:
