@@ -73,15 +73,6 @@ def user_create():
       db.create_user(username, password_hash)
   return 'data_base'
 
-"""
-@app.route('/login', methods= ['POST'])
-def user_login():
-  # create token
-  username = request.form["username"]
-  password = request.form["password"]
-  token = jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
-  return {'token': token.decode('utf-8')}
-"""
 
 @app.route('/login_page', methods = ['GET'])
 def login_page():
@@ -98,8 +89,8 @@ def login():
     if(username == None or password == None):
         username = request.form["username"]
         password = request.form["password"]
-    #if(check_login()):
-      #   return redirect(url_for('templates' , filename='chat.html'))
+    #if(db.check_login(username, password)):
+        #return redirect(url_for('templates' , filename='chat.html'))
     if db.check_login():
         if(g_users.get(username) != None):
             return render_template('Attemptloginpage.html')
@@ -121,6 +112,8 @@ def register():
     check = request.form["check"]
     if(password != check):
         return redirect(url_for('register_page'))
+    #elif(db.check_unique(username)):
+        #return redirect(url_for('register_page'))
     else:
         db.create_user('username', 'password')
         session['username'] = username
