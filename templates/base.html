@@ -16,7 +16,6 @@
     <!-- defining a container i want for my links to traverse the page
     I want it as a block content so I can easily extend the other pages
     with it-->
-    {% block links %}
     <div class="container Login">
         <div class="row Login">
           <div class="col-sm-12 float-left Login">
@@ -26,7 +25,7 @@
           </div>
         </div>
       </div>
-    {% endblock %}
+      {% block body %}{% endblock %}
     
     
     
