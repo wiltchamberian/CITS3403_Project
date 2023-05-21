@@ -128,10 +128,8 @@
         <script>        
             let lastHighlightedRow = null;  
             var tooltip = document.getElementById("tooltip");
-            var serverAddr = "{{ server_ip }}";
-            if(serverAddr == "{{ server_ip }}"){
-              serverAddr = "http://localhost:5000";
-            }
+            let serverAddr = "{{ server_ip }}";
+
             var socket = null;
             var heartbeatTimer = null;
             var labelMessage = document.getElementById('message');
