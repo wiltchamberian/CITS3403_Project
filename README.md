@@ -8,10 +8,9 @@ A simple chat application built using Flask and Socket.IO. This application allo
 
 - Real-time messaging: Users can send and receive messages in real-time.
 - Multiple chat rooms: Users can join different chat rooms and engage in separate conversations.
-- User display names: Users can set their display names to identify themselves in the chat.
 - Simple and intuitive interface: The chat application provides a user-friendly interface for smooth communication.
 
-## Installation
+## Installation(for windows)
 
 1. Clone the repository: `git clone https://github.com/wiltchamberian/CITS3403_Project.git`
 
@@ -19,21 +18,29 @@ A simple chat application built using Flask and Socket.IO. This application allo
 
 3. Create virtual environment: `python -m venv venv`
 
-4. Activate virutal environment: `vennv\Scripts\activate`
+4. Activate virutal environment: `venv/Scripts/activate`
 
-4. Install the required dependencies: `pip install flask, flask_socketio, jwt, time`
+5. Install the required dependencies: `pip install -r requirements.txt`
+
 
 ## Usage
 
-1. Start the Flask development server.
+There are two ways to use it. 
+1). Firstly you can run local server and visit it on local pc.
+   This is mostly for test and showing the basic functions.
+   
+2). Secondly you can run it on heroku, but you need an account and modify configuration.
+
+The basic work-flow is:
+1. Start the Flask development server. by `python -u app.py'
 
 2. Open a web browser and go to `http://localhost:5000` to access the chat application.
 
-3. Enter a display name and select a chat room to join.
+3. Regist an account and select a chat room to join.
 
 4. Start chatting! Type your messages in the input field and press Enter to send them. The messages will appear in the chat room in real-time.
 
-5. To join a different chat room, use the navigation menu or the room switcher feature.
+5. To join a different chat room, search the rooms and double click the room.
 
 6. To exit the chat application, simply close the web browser or press `Ctrl + C` in the terminal where the Flask server is running.
 
