@@ -1,0 +1,540 @@
+* commit 5b7297007d6a8b2057f6235df96fa0c76c149a7d (HEAD -> main, origin/main, origin/HEAD)
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sun May 21 22:31:05 2023 +0800
+| 
+|     readme.md
+| 
+* commit fe6ded6047f9e4d28ab9c09e3118ea7b78c07df2
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sun May 21 22:16:29 2023 +0800
+| 
+|     add some instructions
+| 
+* commit 632c7bb317393030d75af508b5cd854b89c89de2 (heroku/main)
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sun May 21 22:07:23 2023 +0800
+| 
+|     address fix
+| 
+* commit a5bbd9d262bb06c06fdcc3dd3f37125d6335b366
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sun May 21 21:58:20 2023 +0800
+| 
+|     port type revise
+|   
+*   commit 17a097b55276059ec2a64d59204894f28916f3b0
+|\  Merge: 8365df3 4aad689
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 21:44:56 2023 +0800
+| | 
+| |     Merge branch 'uniStyle'
+| |     differ listening addr and visit addr
+| | 
+| * commit 4aad689a4b493673850acd6c0632065ec6964124 (origin/uniStyle, uniStyle)
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 21:44:39 2023 +0800
+| | 
+| |     differ listning addr and visit addr
+| | 
+* | commit 8365df34dad9426210e2e6fcb8add06833530504
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 21:15:02 2023 +0800
+| | 
+| |     fix
+| | 
+* | commit 59716badad361a595cec1807cdb4aedd2cdd956a
+|\| Merge: 9110702 8a4dfe8
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 21:03:38 2023 +0800
+| | 
+| |     Merge branch 'uniStyle'
+| | 
+| * commit 8a4dfe8e061e8ba50862dd8d032e26f320dfd6bb
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 17:43:29 2023 +0800
+| | 
+| |     heroku fix
+| | 
+| * commit 9811817279893f034bd513725a39c31f0d4a937c
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 17:33:15 2023 +0800
+| | 
+| |     fixbug
+| | 
+| * commit 42500efc70f38d0255d470546b28591f8d96e27d
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 17:20:53 2023 +0800
+| | 
+| |     heroku fix
+| | 
+| * commit 3fe2d61d2cc49a34b9a34238df8ab40c6da61419
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 17:11:02 2023 +0800
+| | 
+| |     fix
+| | 
+| * commit ec2f950295fe6785eff49035cdc726e4a7dab524
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 16:57:54 2023 +0800
+| | 
+| |     heroku
+| | 
+| * commit 68ce210385cb53c3229353bd29ce3af50e546371
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 15:21:34 2023 +0800
+| | 
+| |     fix msg to multip rooms
+| | 
+| * commit efac07ff0162e9a8d48949af063027e5df8c1dcf
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sun May 21 14:43:21 2023 +0800
+| | 
+| |     make it works
+| |   
+| | * commit d43ebefdd9b5ec2997cc35a93af545cc9dc26edb (origin/chatHistory)
+| | | Author: nickbaxterr <22973818@student.uwa.edu.au>
+| | | Date:   Sun May 21 18:59:13 2023 +0800
+| | | 
+| | |     adding a working  search functionality to history page
+| | | 
+| | * commit 5987b306e18669078e4a0c7a8ac7e0d3e1223c19
+| |/  Author: nickbaxterr <22973818@student.uwa.edu.au>
+|/|   Date:   Sun May 21 16:44:24 2023 +0800
+| |   
+| |       changing wording so messages display in chat history page
+| | 
+* | commit 91107024de4af1bb87408aba3b34663eb7c524fa
+| | Author: nickbaxterr <22973818@student.uwa.edu.au>
+| | Date:   Sun May 21 16:09:17 2023 +0800
+| | 
+| |     formatting chat history page to match style
+| | 
+* | commit d42c48515a3aa8b31fc1a1b8f89e6a5e498b00bd
+|/  Author: nickbaxterr <22973818@student.uwa.edu.au>
+|   Date:   Sun May 21 14:13:34 2023 +0800
+|   
+|       updating css and formatting of chat room
+| 
+* commit 82f5bfab015a8eb1b809286ae6ded2e33d2b9ef4
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sun May 21 10:32:16 2023 +0800
+| 
+|     make swtiching pages work, unify some of the styles
+|   
+*   commit 12e55ce3d971d4c349f7a35c07ceb56c766dd633
+|\  Merge: b0b28da 61e6f8b
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sat May 20 15:58:18 2023 +0800
+| | 
+| |     fix conflict
+| | 
+| * commit 61e6f8ba813a6ded41ee8f52dceb578addaa1130
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Sat May 20 15:44:36 2023 +0800
+| | 
+| |     Extended base into all files, to make it look good
+| |   
+| *   commit 39bde74b2e881957bcd673bea65d18ae385fa01e
+| |\  Merge: 3675bf9 69392c3
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Sat May 20 15:22:21 2023 +0800
+| | | 
+| | |     Merge branch 'main' of https://github.com/wiltchamberian/CITS3403_Project
+| | | 
+| * | commit 3675bf99f4666714d4c6e7f41a60cd95da72b222
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Sat May 20 15:10:00 2023 +0800
+| | | 
+| | |     Tried to implement function where we check for unique username against the database, and function for unique password
+| | | 
+| * | commit 9fc824ff8b80a79acd4abf8491f160fb58d4ea14
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Sat May 20 15:08:21 2023 +0800
+| | | 
+| | |      settign base up to integreate into other files.
+| | | 
+| * | commit 7a81364a327b6d4565363a2ee47445014887286d
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Sat May 20 15:05:33 2023 +0800
+| | | 
+| | |      added two functions, one to check if username is unique, another to check if passwords si equal
+| | | 
+* | | commit b0b28da7284b3adf7312172e4fcafce3e804d6d8
+| |/  Author: yao tang <wiltchamberian@163.com>
+|/|   Date:   Sat May 20 15:47:25 2023 +0800
+| |   
+| |       make all works, need more test
+| | 
+* | commit 69392c31e953b66054d5cf877a73dba0404fe8cf
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Sat May 20 14:23:30 2023 +0800
+| | 
+| |     remove test code
+| | 
+* | commit 76a4e54bd8a5c9dbcbfe7ddea836f8ca082099ec
+|/  Author: yao tang <wiltchamberian@163.com>
+|   Date:   Sat May 20 14:07:12 2023 +0800
+|   
+|       make send_text->chat_history work
+| 
+* commit 89021a51fde2d27b9487e433718cf9daa4cf07b2
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sat May 20 10:38:42 2023 +0800
+| 
+|     make the regist->login->send_text path just works
+| 
+* commit e9cc3109f4c05080e4a9947a94bb8b5fa2832ede (origin/heroku, heroku)
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Fri May 19 20:28:42 2023 +0800
+| 
+|     heroku test pass
+| 
+* commit 6849f12f4453177561e4558fb030a347f9e8a772
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Fri May 19 20:06:39 2023 +0800
+| 
+|     heroku
+| 
+* commit eedd5660932ed2015f1eaf9ed6c513ce8a303c55
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Fri May 19 19:55:39 2023 +0800
+| 
+|     add domain
+|   
+*   commit 04fd00dc2d30d7599b1736e3d7471697ff5def52
+|\  Merge: 1fa9f72 5269860
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Fri May 19 15:26:42 2023 +0800
+| | 
+| |     Merge branch 'main' of https://github.com/wiltchamberian/CITS3403_Project
+| | 
+| * commit 52698608b5e48825a951c4c0f1888490a2ff09e9
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Fri May 19 14:30:56 2023 +0800
+| | 
+| |     heroku
+| | 
+| * commit e0a2699615acbbd986561284a360d5d2d4cb1eef
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Fri May 19 14:20:47 2023 +0800
+| | 
+| |     heroku needs
+| | 
+| * commit 66948211ea0941ae95b9f4a9a3a3c847ac4d35d1
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Fri May 19 14:17:05 2023 +0800
+| | 
+| |     update_requirements.txt
+| | 
+* | commit 1fa9f72e725f7bf2523848916805693921055299
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Fri May 19 15:26:20 2023 +0800
+| | 
+| |     added Route for register page
+| | 
+* | commit 5e0d8412628b9f313d32b691cea2810e19d0a7d1
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Fri May 19 15:25:22 2023 +0800
+| | 
+| |     Added register html since it was easier, it hashes the password and send it to server
+| | 
+* | commit c83ab78b3c391fecb5313d410ae546bcfca814be
+|/  Author: Ersk <erlinjsk@ulrik.uio.no>
+|   Date:   Fri May 19 15:24:13 2023 +0800
+|   
+|       Added register url in login
+| 
+* commit 60bb7f5e9d397b366519e778bb6f9c70a3315d5e
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Fri May 19 14:08:26 2023 +0800
+| 
+|     add Procfile for heroku
+| 
+* commit fd53ba9723ec44c6012aec1a6f8b42d693e4d578
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Thu May 18 19:02:34 2023 +0800
+| 
+|     improve style,room-list,text-area,add config.ini
+|   
+| * commit 985cd94ca807280b3959a761fb1e70b651ac903b (AiTest)
+| | Author: yao tang <wiltchamberian@163.com>
+| | Date:   Fri May 19 18:51:03 2023 +0800
+| | 
+| |     fix
+| | 
+| * commit 3f8bb8bef6c393d8b4622c88dcd240b84db7f40c
+|/  Author: unknown <wiltchamberian@163.com>
+|   Date:   Wed May 17 11:37:24 2023 +0800
+|   
+|       ai-test
+| 
+* commit 4701a4e8f6120d4c69639c351b228aff4ec81817 (a)
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Tue May 16 18:02:35 2023 +0800
+| 
+|     db fix
+| 
+* commit c1a6b2a9f1bf641f9c28e1632c149a7128c9e6df
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Tue May 16 17:53:21 2023 +0800
+| 
+|     fix the code
+|   
+*   commit 83cd052c9b6051fcab2fcc5c0b1fea5e3ab3d9cd
+|\  Merge: d6a9841 0ef31e1
+| | Author: unknown <wiltchamberian@163.com>
+| | Date:   Tue May 16 17:24:38 2023 +0800
+| | 
+| |     nothing to say, someone mis delete my code, just recover
+| | 
+| * commit 0ef31e121fd6562b969d0cfa49996fe34b3883d5
+| | Author: AliParky <aparkinson670@gmail.com>
+| | Date:   Tue May 16 15:14:49 2023 +0800
+| | 
+| |     rename dbmgr.py to db.py
+| | 
+| * commit cb27c765814166d0881f872db5afb03f60ac1105
+| | Author: AliParky <aparkinson670@gmail.com>
+| | Date:   Tue May 16 15:05:58 2023 +0800
+| | 
+| |     load sample data into db
+| | 
+| * commit 7e2f4deb8af070f177ecd7aa92298482d3745431
+| | Author: AliParky <99878772+AliParky@users.noreply.github.com>
+| | Date:   Tue May 16 05:28:20 2023 +0800
+| | 
+| |     Update README.md
+| | 
+* | commit d6a9841c9607360f6dc24204b50197718a326b23
+|/  Author: unknown <wiltchamberian@163.com>
+|   Date:   Tue May 16 16:58:35 2023 +0800
+|   
+|       add styles,add room list function
+|   
+| * commit 55ee640fba279ee809b1905d0d05f619a60fd91b (origin/testing_of_database)
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Tue May 16 15:46:33 2023 +0800
+| | 
+| |     Just commented the testcase in module away,
+| |     deleted Attemptloginpage
+| | 
+| * commit d0585fc0dd5f1ebbddeb485e85dc27a7e4aebf81
+|/  Author: Ersk <erlinjsk@ulrik.uio.no>
+|   Date:   Tue May 16 15:33:12 2023 +0800
+|   
+|       Merge branch 'main' of https://github.com/wiltchamberian/CITS3403_Project
+| 
+* commit 7db4e5c0c2b71bb3b26a10f4218dee4e9ae0d675
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Fri May 12 13:10:00 2023 +0800
+| 
+|     fix bug
+| 
+* commit 835ba39f5e7c60fe14d4a355dd8479c13eb524d1
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Fri May 12 11:03:17 2023 +0800
+| 
+|     move game related to other branch
+|   
+*   commit 79b8fce51b5c04de797c9f9d7e1f9d53b96641f6 (origin/game, game)
+|\  Merge: 37eb11c e0fe682
+| | Author: unknown <wiltchamberian@163.com>
+| | Date:   Fri May 12 09:00:45 2023 +0800
+| | 
+| |     Merge branch 'main' of github.com:wiltchamberian/CITS3403_Project
+| | 
+| * commit e0fe682fec4d1e1ac5038c944799b9416ae7c0f9
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Thu May 11 23:56:16 2023 +0800
+| | 
+| |     added style to the container
+| | 
+| * commit 2440015df02f9a09ec22fc50a07c0970047be125
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Thu May 11 23:55:53 2023 +0800
+| | 
+| |     Same container in base
+| | 
+| * commit 408bc92e0d1f11773d4075ec4308ebde626dcb6a
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Thu May 11 23:55:23 2023 +0800
+| | 
+| |     Added a container for linking between sites
+| |   
+| *   commit fa0335fea73693265a6ada34fd710a17fd96e475
+| |\  Merge: 7a5e612 854f184
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Thu May 11 23:46:53 2023 +0800
+| | | 
+| | |     Merge branch 'main' of https://github.com/wiltchamberian/CITS3403_Project
+| | | 
+| * | commit 7a5e61225ca029970db7adae6d94181e4eeb78a5
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Thu May 11 23:39:44 2023 +0800
+| | | 
+| | |     Made a variable for if someone is logged in or not, but we need to make it a boolean variable in database per user probably.
+| | | 
+| * | commit 28250c5dfeca3f4d367990897149bbe0fb9229dc
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Tue May 9 10:53:48 2023 +0800
+| | | 
+| | |     Just testing module for authentication
+| | | 
+* | | commit 37eb11c8daba2506b6b3c0f46543cce576fd6264
+| |/  Author: unknown <wiltchamberian@163.com>
+|/|   Date:   Fri May 12 09:00:22 2023 +0800
+| |   
+| |       add settings
+| | 
+* | commit 854f184275471728d2dc703be3a4c231dda1445e
+| | Author: unknown <wiltchamberian@163.com>
+| | Date:   Thu May 11 12:39:36 2023 +0800
+| | 
+| |     move some configs from app.py to setting
+| | 
+* | commit 548c962bf4622795bb1d452d9290ee9de64dcac2
+| | Author: unknown <wiltchamberian@163.com>
+| | Date:   Thu May 11 11:02:57 2023 +0800
+| | 
+| |     add some style to the sending view
+| |   
+* |   commit 7c7adaac6d5ecdd2f4ca33cc8dc80d207461bf9a
+|\ \  Merge: 68aa693 a07eea9
+| | | Author: unknown <wiltchamberian@163.com>
+| | | Date:   Wed May 10 21:48:08 2023 +0800
+| | | 
+| | |     revise some bugs
+| | | 
+| * | commit a07eea96714c2df4604bd55ab0a2423f2b8e67f3
+| | | Author: nickbaxterr <22973818@student.uwa.edu.au>
+| | | Date:   Wed May 10 16:10:38 2023 +0800
+| | | 
+| | |     rough sample for the user's chat history page
+| | | 
+| * | commit 6698ab940a36c2826b7f3e93040df0872e5efaf4
+| | | Author: nickbaxterr <22973818@student.uwa.edu.au>
+| | | Date:   Wed May 10 14:23:40 2023 +0800
+| | | 
+| | |     adding /chat_history route
+| | | 
+| * | commit 1e04b0b55b375aec40cf4648772f1360a134435f
+| | | Author: nicbaxterr <92770940+nicbaxterr@users.noreply.github.com>
+| | | Date:   Tue May 9 21:45:42 2023 +0800
+| | | 
+| | |     Adding requirements file to the Project
+| | | 
+* | | commit 68aa69380717a7c5f1a78108d03cc5b5f8922bb7
+| | | Author: unknown <wiltchamberian@163.com>
+| | | Date:   Wed May 10 21:31:55 2023 +0800
+| | | 
+| | |     server_game_basically_finish
+| | |   
+* | |   commit 50c811fef657684ea94a7715c35853c4dfaa7d31
+|\ \ \  Merge: 8ba8e9a bfc54da
+| | |/  Author: unknown <wiltchamberian@163.com>
+| |/|   Date:   Wed May 10 10:01:10 2023 +0800
+| | |   
+| | |       update
+| | | 
+| * | commit bfc54da57dfd0f53f7b83f107efe63a02a851b74
+| | | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | | Date:   Tue May 9 10:41:54 2023 +0800
+| | | 
+| | |     wanted the forms to get their info from login  page and not user
+| | | 
+| * | commit 54d65bb2c5d3c5cb9fb7426dd735cd6a68c0685d
+| |/  Author: Ersk <erlinjsk@ulrik.uio.no>
+| |   Date:   Tue May 9 10:41:08 2023 +0800
+| |   
+| |       Changed login path to render template do not know if I should fix token as well in the previous one
+| | 
+* | commit 8ba8e9a653f3efb05d55ed85cadf1d05b02e8b8d
+|/  Author: unknown <wiltchamberian@163.com>
+|   Date:   Tue May 9 20:06:20 2023 +0800
+|   
+|       server game
+| 
+* commit 13ee27e88e890d5e8eb54fb0f441233d4482cebe
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Sat Apr 29 14:31:06 2023 +0800
+| 
+|     add doc for environment config
+| 
+* commit 793400e89b9e3bcefed9b1889197385fdc1430fe
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Sat Apr 29 14:21:07 2023 +0800
+| 
+|     client send, server received, chat room ok
+| 
+* commit f1e21ad105fd1aade47fef00e45e9fa2969dcfee
+| Author: AliParky <aparkinson670@gmail.com>
+| Date:   Sat Apr 29 03:20:56 2023 +0800
+| 
+|     prototype a single response chat bot
+| 
+* commit edcd277f7a06d975332852d7019806ac587c0231
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Mon Apr 24 19:48:07 2023 +0800
+| 
+|     remove chinese
+| 
+* commit ecd51c84898bd26d6b92733a479dd50119cda5d3
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Mon Apr 24 19:41:37 2023 +0800
+| 
+|     add socketio, add basic text view html
+| 
+* commit 8eb73fd095581719212416247a8bd8ec350c9d58
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Thu Apr 13 13:58:14 2023 +0800
+| 
+|     add dbmgr,basic insert
+| 
+* commit 80ec7954b710f18da688eed3805d798eb7a1ae4a
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Tue Apr 11 17:15:02 2023 +0800
+| 
+|     test get command, pass
+| 
+* commit e3b34acf5eca760b86a5e05842eb135e1191f863
+| Author: unknown <wiltchamberian@163.com>
+| Date:   Tue Apr 11 16:29:10 2023 +0800
+| 
+|     move css to folder styles, add static folder
+|   
+*   commit f3f26e94f5e82385f1d58903625d88daac2afe25
+|\  Merge: b31ef5f 3cbd8c4
+| | Author: AliParky <aparkinson670@gmail.com>
+| | Date:   Tue Apr 11 14:33:49 2023 +0800
+| | 
+| |     Merge branch 'main' of https://github.com/wiltchamberian/CITS3403_Project
+| | 
+| * commit 3cbd8c445de5866e97e4ad40da6c56f15dd80c59
+| | Author: Ersk <erlinjsk@ulrik.uio.no>
+| | Date:   Tue Apr 11 14:32:21 2023 +0800
+| | 
+| |     Just a template for first login page
+| | 
+* | commit b31ef5f6abeaa0998dd3a872e3984ad9e151ecf6
+|/  Author: AliParky <aparkinson670@gmail.com>
+|   Date:   Tue Apr 11 14:33:19 2023 +0800
+|   
+|       create gitignore
+| 
+* commit 142454cad27426edbfd27911b1656efbe61b04ac
+| Author: AliParky <aparkinson670@gmail.com>
+| Date:   Tue Apr 11 14:00:31 2023 +0800
+| 
+|     create app.py
+| 
+* commit f5107e3c3bb4224bbb906b7bf778e883147b995f
+| Author: AliParky <aparkinson670@gmail.com>
+| Date:   Tue Apr 11 13:48:57 2023 +0800
+| 
+|     create base.html
+| 
+* commit 8bc581872d83a88c36d5f282dc51ca5bfd5acc82
+  Author: yao tang <wiltchamberian@163.com>
+  Date:   Fri Apr 7 10:51:11 2023 +0800
+  
+      Initial commit

@@ -67,6 +67,11 @@ The basic work-flow is:
 | bob | 2023-05-22 09:04 | thats a crime |
 | eve | 2023-05-22 09:05| what can i say its simply the best |
 
+### Test
+1. run the flask server on local
+2. python tests/test.py and check whether it print the webpages (make sure remove the database before test)
+3. you can add more test by yourself and look at the route codes
+
 ## License
 
 This project is licensed under the MIT License. You are free to modify, distribute, and use the code for personal and commercial purposes.
