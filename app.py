@@ -77,7 +77,7 @@ def attemptloginpage_template():
                             register_page = url_for('register_page'),\
                             login_page = url_for('login_page'),\
                             # user_page = url_for('user_page'),\
-                            login = url_for('login_page'), \
+                            login = url_for('login'), \
                             register = url_for('register_page'))
 
 def register_page_template():
