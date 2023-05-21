@@ -305,7 +305,7 @@ def on_join(data):
     
     g_user_rooms[username] = room
     join_room(room)
-    emit('join-success', {'text': f'{username} enter {room}', 'room': room}, room = room)
+    emit('join-success', {'text': f'{username} enter {room}', 'room': room, 'username':username }, room = room)
 
 @socketio.on('leave')
 def on_leave(data):
@@ -319,8 +319,13 @@ def on_leave(data):
 def on_message(data):
     log("on_message!")
     username = data.get('username',None)
-    room = data.get('room',None)
-    text = data.get('text',None)
+    #room = data.get('room',None)
+    room = g_user_rooms.get(username, None)
+    text = data.get('text','')
+
+    if(room == None or username == None):
+        log("room == None or username == None")
+        return
 
     item = {}
     item["username"] = username 

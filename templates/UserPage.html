@@ -315,7 +315,8 @@
                 socket.off('join-success')
                 socket.on('join-success',function(data){
                   label_msg("join success!")
-                  let roomName = data["room"]
+                  let roomName = data["room"];
+                  let joinUserName = data["username"];
                   chatBoxHead.innerHTML = "Room:"+ roomName;
                   socket.off('message')
                   socket.on('message',onReceiveText);
@@ -327,7 +328,12 @@
                   }, 1000);
                   
                   //clear the text and search for history
-                  chatBox.innerHTML = ""
+                  if(joinUserName == userName){
+                    chatBox.innerHTML = ""
+                  }else{
+                    
+                  }
+                  
 
                   //send_heart()
                 });
