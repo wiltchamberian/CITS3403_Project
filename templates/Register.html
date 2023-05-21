@@ -10,31 +10,38 @@
         <input type="text" id="username" name="username" required>
         
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-
+        <input type="password" id="password_show" name="password_show" required>
+        <input style = "display: none;" id="password" name="password">
         <label for="check">Type Password again:</label>
-        <input type="password" id="Check" name="check" required>
-        
+        <input type="password" id="check_show" name="check_show" required>
+        <input style = "display: none;" id="check" name="check">
         <input type="submit" value="Register">
     </form>
 
     <script> 
         function md5hash(){
-            var passwordInput = document.getElementById('password');
-            var checkInput = document.getElementById('check');
-            // Use this passwordInput.value; because. We only get the DOM element and not it's valeu
+            var passwordInput = document.getElementById('password_show');
+            var checkInput = document.getElementById('check_show');
+            // Use this passwordInput.value; because. We only get the DOM element and not it's value
             var password = passwordInput.value;
             var check = checkInput.value;
             // Calculate MD5 hash
             var hash = CryptoJS.MD5(password);
             var hash2 = CryptoJS.MD5(check);
             // Set the hashed password as the input value, this works since we're in the dom model.
-            passwordInput.value = hash;
-            checkInput = hash2;
+            let password_hash = document.getElementById('password')
+            let check_hash = document.getElementById('check')
+            password_hash.value = hash 
+            check_hash.value =  hash2
         }
+
+        var name = document.cookie;
 
         //gets the form and runs hashing function on click of the submit button
         var form = document.getElementById('formRegister')
         form.addEventListener('submit', md5hash);
+
+        
+        
     </script>
 {% endblock %}
