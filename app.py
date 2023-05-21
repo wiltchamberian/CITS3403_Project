@@ -366,5 +366,7 @@ if __name__ == "__main__":
     host = app.config["HOST"]
     port = app.config["PORT"]
 
-    log("Flask-SocketIO Start, host:{0}, port:{1}".format(host,port))
-    socketio.run(app, host=host,port = port, allow_unsafe_werkzeug = True)
+    log("Flask-SocketIO Start, host:{0}, port:{1}".format(app.config["HOST"],app.config["PORT"]))
+    if app.config["ENV"] == "remote":
+        host = "0.0.0.0" #heroku listening 
+    socketio.run(app, host=host, port = port, allow_unsafe_werkzeug = True)
