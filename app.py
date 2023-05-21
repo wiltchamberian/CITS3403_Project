@@ -99,8 +99,9 @@ def chat_history_template(username, messages):
                            , username = username)
 
 def user_name_page_response(username):
+    addr = app.config["HOST"] + ":" + app.config["PORT"]
     html = render_template('UserPage.html', username = username, \
-                            server_ip = app.config["HOST"],\
+                            server_ip = addr,\
                             history = url_for('chat_hisotry_page'))
     response = make_response(html)
     response.set_cookie('username', username)
@@ -367,6 +368,4 @@ if __name__ == "__main__":
     port = app.config["PORT"]
 
     log("Flask-SocketIO Start, host:{0}, port:{1}".format(app.config["HOST"],app.config["PORT"]))
-    if app.config["ENV"] == "remote":
-        host = "0.0.0.0" #heroku listening 
-    socketio.run(app, host=host, port = port, allow_unsafe_werkzeug = True)
+    socketio.run(app, host="0.0.0.0", port = port, allow_unsafe_werkzeug = True)
