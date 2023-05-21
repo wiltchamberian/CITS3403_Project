@@ -1,6 +1,6 @@
 from dbmgr import *
 from flask import request, render_template, url_for, redirect, session, make_response
-from settings import socketio,log, g_users, user_lock, g_dic_sids, g_user_rooms, app, db, UserState, UserInfo
+from settings import socketio,log, g_users, user_lock, g_dic_sids, g_user_rooms, app, db, UserState, UserInfo, g_config
 from threading import Thread
 from threading import Lock
 #this code can't pass compile and it seems there are no modules called "module"
@@ -13,8 +13,12 @@ import datetime
 import time
 import json
 import os
+import sys
 
 from db import db_test
+
+
+
 
 with app.app_context():
     db.create_all()
@@ -95,7 +99,9 @@ def chat_history_template(username, messages):
                            , username = username)
 
 def user_name_page_response(username):
-    html = render_template('UserPage.html', username = username, history = url_for('chat_hisotry_page'))
+    html = render_template('UserPage.html', username = username, \
+                            server_ip = app.config["HOST"],\
+                            history = url_for('chat_hisotry_page'))
     response = make_response(html)
     response.set_cookie('username', username)
     return response
@@ -172,14 +178,7 @@ def register():
     
 @app.route('/')
 def index():
-    log("index!")
-    address = ''
-    if app.debug == 'production':
-        address = 'https://quiet-ocean-05389.herokuapp.com'  # Heroku
-    else:
-        address = app.config["HOST"]  # local environment
-    log("adderss:", address)
-    return home_page_template();
+    return home_page_template()
     
 def protected():
   token = request.headers.get('Authorization')
@@ -352,11 +351,20 @@ def on_heart(data):
 if __name__ == "__main__":
     #app.run(debug=True)
     #start server by flask-socketio
-    
+
+    #get command params
+    args = sys.argv[1:]  #skip first argument which is script name
+    if "--env" in args:
+        host_index = args.index("--env")
+        if host_index < len(args) - 1:
+            app.config["ENV"] = args[host_index + 1]
+            print("ENV:", app.config["ENV"])
+            if app.config["ENV"] == "remote":
+                app.config["HOST"] = g_config.get('REMOTE_SERVER','HOST')
+                app.config["PORT"] = int(os.environ.get("PORT", app.config["PORT"])) 
+  
     host = app.config["HOST"]
     port = app.config["PORT"]
 
-    #host = "https://quiet-ocean-05389.herokuapp.com";
-    port = int(os.environ.get("PORT", port)) 
     log("Flask-SocketIO Start, host:{0}, port:{1}".format(host,port))
     socketio.run(app, host=host,port = port, allow_unsafe_werkzeug = True)

@@ -19,8 +19,8 @@ class UserInfo:
 #import eventlet
 #eventlet.monkey_patch()
 
-config = ConfigParser()
-config.read('config.ini')
+g_config = ConfigParser()
+g_config.read('config.ini')
 
 #TODO add an manager class and put these variable in it
 g_users = {} #key:username value:time
@@ -39,8 +39,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 # set private key 
 app.config['SECRET_KEY'] = '0x950341313543'
 
-app.config['HOST'] = config.get('SERVER','HOST')
-app.config['PORT'] = config.get('SERVER','PORT')
+app.config['ENV'] = 'local'  #local or remote, remote is for heroku
+app.config['HOST'] = g_config.get('LOCAL_SERVER','HOST')
+app.config['PORT'] = g_config.get('LOCAL_SERVER','PORT')
 
 #create socketio
 #socketio = SocketIO(app,cors_allowed_origins="*", async_mode='eventlet')

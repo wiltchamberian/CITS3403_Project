@@ -1,1 +1,1 @@
-web: python -u app.py
+web: python -u app.py --env remote

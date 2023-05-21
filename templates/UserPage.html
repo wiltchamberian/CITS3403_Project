@@ -130,7 +130,6 @@
             var tooltip = document.getElementById("tooltip");
             var serverAddr = "{{ server_ip }}";
             if(serverAddr == "{{ server_ip }}"){
-              serverAddr = "https://quiet-ocean-05389.herokuapp.com";
               serverAddr = "http://localhost:5000";
             }
             var socket = null;
@@ -331,7 +330,7 @@
                   if(joinUserName == userName){
                     chatBox.innerHTML = ""
                   }else{
-                    
+
                   }
                   
 
