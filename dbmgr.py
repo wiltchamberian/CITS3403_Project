@@ -24,6 +24,9 @@ class DbMgr(SQLAlchemy):
         self.session.add(user)
         return self.commit_s()
 
+    def query_messages(self, username, keyword):
+        return Message.query.filter(Message.username == username, Message.message.like(f"%{keyword}%")).all()
+
     def receive_text(self, txt):
         text = Text(
             text = txt
@@ -42,6 +45,9 @@ class DbMgr(SQLAlchemy):
     def check_login(self, userName, password):
         users = User.query.filter_by(username=userName).all()
         if(len(users) == 0):
+            return False
+        user = users[0]
+        if(user.password != password):
             return False
         return True
 
@@ -74,7 +80,6 @@ class DbMgr(SQLAlchemy):
         return lis
 
     def add_default_administrator(self):
-        self.create_user("yao","abc123")
         self.create_user("admin","admin")
         self.create_room("admin", "admin")
 

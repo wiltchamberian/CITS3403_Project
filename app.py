@@ -1,5 +1,5 @@
 from dbmgr import *
-from flask import request, render_template, url_for, redirect, session
+from flask import request, render_template, url_for, redirect, session, make_response
 from settings import socketio,log, g_users, user_lock, g_dic_sids, g_user_rooms, app, db, UserState, UserInfo
 from threading import Thread
 from threading import Lock
@@ -69,9 +69,10 @@ def user_login():
 
 def attemptloginpage_template():
     return render_template('Attemptloginpage.html', \
-                            register_page = url_for('register_page'),\
                             index_page = url_for('index'),\
+                            register_page = url_for('register_page'),\
                             login_page = url_for('login_page'),\
+                            # user_page = url_for('user_page'),\
                             login = url_for('login_page'), \
                             register = url_for('register_page'))
 
@@ -79,12 +80,32 @@ def register_page_template():
     return render_template('Register.html', register_page = url_for('register_page'), \
                             index_page = url_for('index'),\
                             login_page = url_for('login_page'),\
+                            # user_page = url_for('user_page'),\
                             register = url_for('register'))
     
 def home_page_template():
     return render_template('HomePage.html', register_page = url_for('register_page'), \
                             index_page = url_for('index'),\
+                            # user_page = url_for('user_page'),\
                             login_page = url_for('login_page'))
+
+def chat_history_template(username, messages):
+    return render_template('chat_history.html', chat_history = url_for('chat_history')\
+                           ,messages = messages\
+                           , username = username)
+
+def user_name_page_response(username):
+    html = render_template('UserPage.html', username = username, history = url_for('chat_hisotry_page'))
+    response = make_response(html)
+    response.set_cookie('username', username)
+    return response
+
+@app.route('/user_page', methods = ['GET', 'POST'])
+def user_page():
+    username = request.cookies.get('username',None)
+    if username != None:
+        return render_template('UserPage.html', username = username, history = url_for('chat_hisotry_page'))
+    return 
 
 @app.route('/login_page', methods = ['GET'])
 def login_page():
@@ -118,13 +139,17 @@ def login():
         g_users[username].state = UserState.LOGGED
         history = url_for('chat_hisotry_page')
         log(history)
-        return render_template('send_text.html', username = username, history = history)
+        return user_name_page_response(username)
     else:
         return attemptloginpage_template();
 
 @app.route('/register_page', methods = ['GET' ,'POST'])
 def register_page():
+    #username = request.cookies.get('username')
+
     return register_page_template()
+
+   
                            
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -150,9 +175,9 @@ def index():
     log("index!")
     address = ''
     if app.debug == 'production':
-        address = 'https://quiet-ocean-05389.herokuapp.com'  # Heroku 公共域名
+        address = 'https://quiet-ocean-05389.herokuapp.com'  # Heroku
     else:
-        address = app.config["HOST"]  # 本地开发环境地址
+        address = app.config["HOST"]  # local environment
     log("adderss:", address)
     return home_page_template();
     
@@ -167,12 +192,6 @@ def protected():
   except jwt.InvalidTokenError:
       return {'error': 'Invalid token'}, 401
 
-@app.route('/send-text', methods = ['POST'])
-def save_text():
-  res = db.receive_text(request)
-  #deliver the text to members in the room
-  return res
-
 #open chat_history web page
 @app.route('/chat-history-page', methods=['POST', 'GET'])
 def chat_hisotry_page():
@@ -183,23 +202,19 @@ def chat_hisotry_page():
     #                        register = url_for('register_page'))
 
     username = request.args.get("username",None)
-    return render_template('chat_history.html', chat_history = url_for('chat_history')\
-                           ,messages = []\
-                           , username = username)
+    return chat_history_template(username, [])
 
 #for search the chat history
 @app.route('/chat_history',methods = ['GET','POST'])
 def chat_history():
   log("chat_history")
-  query = request.form['search_query']
-  username = request.form['username']
+  query = request.form.get('search_query',None)
+  username = request.form.get('username',None)
   current_user = User.query.filter_by(username= username).first()
   messages = []
   if current_user!=None:
-      messages = Message.query.filter_by(username=current_user.username).all()
-  return render_template('chat_history.html' \
-                         ,chat_history = url_for('chat_history')\
-                         ,messages=messages)
+      messages = db.query_messages(current_user.username, query)
+  return chat_history_template(username, messages)
 
 #for chatting, use long-connect
 @socketio.on('connect')
@@ -217,6 +232,9 @@ def on_connect():
         elif info.state == UserState.UNDEFINED:
             emit('connect-failed', {'msg':'not logged'})
             return 
+    else:
+        emit('connect-failed', {'msg':'not logged'})
+        return
         
     #if not loggined but connect directly, allow to login for covenient...
     g_dic_sids[client_id] = username

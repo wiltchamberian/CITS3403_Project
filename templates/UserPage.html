@@ -177,7 +177,7 @@
             var roomListBox = document.getElementById("room-list");
             function label_msg(message){
               var labelMessage = document.getElementById('message');
-              labelMessage.innerHTML  = userName + " " + message;
+              labelMessage.innerHTML  = userName + ":" + message;
             }
 
             function send_heart(){
@@ -328,7 +328,6 @@
                   
                   //clear the text and search for history
                   chatBox.innerHTML = ""
-                  chat_history()
 
                   //send_heart()
                 });
@@ -375,7 +374,7 @@
               const div = document.createElement('div');
               div.classList.add('message-div');
               const avatar = document.createElement('div');
-              avatar.innerText = "avatar";
+              avatar.innerText = data["username"];
               avatar.classList.add('avatar');
               const txt = document.createElement('div');
               txt.classList.add('new-message'); 

@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">-->
     <link rel="stylesheet" href="../static/styles/index.css">
     {% block head %}{% endblock %}
 </head>
@@ -21,8 +21,8 @@
         <div class="row Login">
           <div class="col-sm-12 float-left Login">
             <a href="{{ index_page }}">Home</a>
-            <a href="{{ login_page }}">Login</a>
             <a href="{{ register_page }}">Register</a>
+            <a href="{{ login_page }}">Login</a>
             <!--<a href="{{ user_page }}">User</a>--><!--to use user page needs a user name, but no user name here-->
           </div>
         </div>

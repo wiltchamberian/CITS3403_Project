@@ -19,21 +19,22 @@
             <input type="text" id="username" name="username" required>
     
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-    
+            <input type="password" id="password_show" name="password_show" required>
+            <input style = "display: none;" type="password" id="password" name="password">
             <input type="submit" value="Login">
         </form>
         <p> Not registred? <a href="{{ register }}">Click to Register!</a></p>
     </div>
     <script> 
         function md5hash(){
-            var passwordInput = document.getElementById('password');
+            var passwordInput = document.getElementById('password_show');
             // Use this passwordInput.value; because. We only get the DOM element and not it's valeu
             var password = passwordInput.value;
             // Calculate MD5 hash
             var hash = CryptoJS.MD5(password);
             // Set the hashed password as the input value, this works since we're in the dom model.
-            passwordInput.value = hash;
+            let password_hash = document.getElementById('password')
+            password_hash.value = hash;
         }
 
         //gets the form and runs hashing function on click of the submit button
