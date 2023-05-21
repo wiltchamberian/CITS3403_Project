@@ -77,8 +77,7 @@ def attemptloginpage_template():
                             register_page = url_for('register_page'),\
                             login_page = url_for('login_page'),\
                             # user_page = url_for('user_page'),\
-                            login = url_for('login'), \
-                            register = url_for('register_page'))
+                            login = url_for('login'))
 
 def register_page_template():
     return render_template('Register.html', register_page = url_for('register_page'), \
@@ -115,7 +114,7 @@ def user_page():
 
 @app.route('/login_page', methods = ['GET'])
 def login_page():
-    return attemptloginpage_template();
+    return attemptloginpage_template()
 
 #code for redirecting from login page, to chat page given correct credentials.
 #check_login() is a function checking if the credentials are correct.
