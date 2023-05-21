@@ -14,7 +14,7 @@ import time
 import json
 import os
 
-from db import db_init
+from db import db_test
 
 with app.app_context():
     db.create_all()
@@ -23,7 +23,7 @@ with app.app_context():
 
     user = User(username='testuser', password='testpassword')
 
-    db_init()
+    db_test()
 
 def check_heart():
     return
@@ -67,11 +67,28 @@ def user_login():
   return {'token': token.decode('utf-8')}
 """
 
-@app.route('/login_page', methods = ['GET'])
-def login_page():
+def attemptloginpage_template():
     return render_template('Attemptloginpage.html', \
+                            register_page = url_for('register_page'),\
+                            index_page = url_for('index'),\
+                            login_page = url_for('login_page'),\
                             login = url_for('login_page'), \
                             register = url_for('register_page'))
+
+def register_page_template():
+    return render_template('Register.html', register_page = url_for('register_page'), \
+                            index_page = url_for('index'),\
+                            login_page = url_for('login_page'),\
+                            register = url_for('register'))
+    
+def home_page_template():
+    return render_template('HomePage.html', register_page = url_for('register_page'), \
+                            index_page = url_for('index'),\
+                            login_page = url_for('login_page'))
+
+@app.route('/login_page', methods = ['GET'])
+def login_page():
+    return attemptloginpage_template();
 
 #code for redirecting from login page, to chat page given correct credentials.
 #check_login() is a function checking if the credentials are correct.
@@ -80,21 +97,22 @@ def login():
     username = session.get('username',None)
     password = session.get('password',None)
     if(username == None or password == None):
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username",None)
+        password = request.form.get("password",None)
 
     #reset, session may not suitable, but works TODO
     session['username'] = None
     session['password'] = None
+
+    if username == None or password == None:
+        return attemptloginpage_template();
 
     log("login")
     log("username:"+username)
 
     if db.check_login(username, password):
         if(g_users.get(username) != None):
-            return render_template('Attemptloginpage.html', \
-                        login = url_for('login_page'), \
-                        register = url_for('register_page'))
+            return attemptloginpage_template();
         g_users[username] = UserInfo()
         g_users[username].time = time.time()
         g_users[username].state = UserState.LOGGED
@@ -102,19 +120,19 @@ def login():
         log(history)
         return render_template('send_text.html', username = username, history = history)
     else:
-        return render_template('Attemptloginpage.html', \
-                                login = url_for('login_page'), \
-                                register = url_for('register_page'))
+        return attemptloginpage_template();
 
-@app.route('/register_page', methods = ['GET'])
+@app.route('/register_page', methods = ['GET' ,'POST'])
 def register_page():
-    return render_template('Register.html', register = url_for('register'))
-
+    return register_page_template()
+                           
 @app.route('/register', methods=['GET','POST'])
 def register():
-    username = request.form["username"]
-    password = request.form["password"]
-    check = request.form["check"]
+    username = request.form.get("username", None)
+    password = request.form.get("password", None)
+    check = request.form.get("check",None)
+    if(username == None or password == None or check == None):
+        return redirect(url_for('register_page'))
     if(password != check):
         return redirect(url_for('register_page'))
     #elif(db.check_unique(username)):
@@ -136,10 +154,7 @@ def index():
     else:
         address = app.config["HOST"]  # 本地开发环境地址
     log("adderss:", address)
-    #return render_template('send_text.html', server_ip = address)
-    return render_template('Attemptloginpage.html', \
-                            login = url_for('login_page'), \
-                            register = url_for('register_page'))
+    return home_page_template();
     
 def protected():
   token = request.headers.get('Authorization')

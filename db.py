@@ -3,15 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 
-# Create Flask application instance
-#app = Flask(__name__) #the app has been created in settings.py, so 
 from settings import app
 
 # Configure the SQLAlchemy database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 
-# Create SQLAlchemy database instance #the db has existed in so just import
-#db = SQLAlchemy(app)
 from dbmgr import User
 from dbmgr import db
 from dbmgr import Message
@@ -42,10 +38,8 @@ message_data = [
         'message': 'what can i say its simply the best' }
 ]
 
-#with app.app_context(): this function can't be called more than once, just write a
-#function and put the function in app.context() in app.py
 
-def db_init():
+def db_test():
     # Create the tables if they don't exist
     #db.create_all()  it has been called in app.py, you can't run without it.
 

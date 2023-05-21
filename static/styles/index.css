@@ -87,3 +87,98 @@ The code below is for styling of the side of links.
 	background-color: black; /* Change the background color of the links on hover */
   }
   
+/*send_text.html*/
+button {
+    background: linear-gradient(to bottom, #00c6ff, #0072ff);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+button:active {
+  box-shadow: 0 3px #666;
+  transform: translateY(-1px); 
+}
+
+.search-button {
+  background: #87CEEB;
+  border: none;
+  color: white;
+  padding: 2px 2px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+textarea{
+  margin: 4px 2px;
+  border:2px solid #00BFFF;
+  border-radius: 3px;
+}
+canvas {
+  border:3px solid #00BFFF;
+  border-radius: 5px;
+  background-color:#FFFFFF;   /*#f1f1f1;*/
+  position: relative;
+  margin-top: 0.2%;
+  /*left: 10%;*/
+  width: 720px;
+  height: 420px;
+}
+
+.flex_container {
+  display: flex;
+  margin-left: 5%;
+}
+
+.round-button{
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #808080;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  /*box-shadow: 0 2px 6px rgba(0,0,0,0.3);*/
+}
+
+.round-button.active{
+  background: #008CBA;
+}
+
+.message-div{
+  display: flex;
+  align-items: center;
+}
+
+.message {
+  background-color: #f0f0f0;
+  padding: 100px;
+  margin-top :20px;
+  margin-bottom: 20px;
+  line-height: 1.5; /* 设置行高为 1.5 */
+}
+
+.avatar{
+  margin-bottom:20px;
+  margin-right: 10px;
+  background-color:aqua;
+}
+
+.new-message {
+  background-color: #FFFFFF;
+  padding: 10px;
+  margin-bottom: 20px;
+  line-height: 1.5; 
+}

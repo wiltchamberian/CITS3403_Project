@@ -10,92 +10,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 		    <link rel="stylesheet" href="../static/styles/index.css">
         <style>
-          button {
-              background: linear-gradient(to bottom, #00c6ff, #0072ff);
-              border: none;
-              color: white;
-              padding: 10px 20px;
-              text-align: center;
-              text-decoration: none;
-              display: inline-block;
-              font-size: 16px;
-              margin: 4px 2px;
-              cursor: pointer;
-              border-radius: 8px;
-          }
-          button:active {
-            box-shadow: 0 3px #666; /* 点击时添加凹陷效果 */
-            transform: translateY(-1px); /* 平移4像素，使得按钮有一个下沉的效果 */
-          }
-          .search-button {
-              background: #87CEEB;
-              border: none;
-              color: white;
-              padding: 2px 2px;
-              text-align: center;
-              text-decoration: none;
-              display: inline-block;
-              font-size: 16px;
-              margin: 4px 2px;
-              cursor: pointer;
-              border-radius: 8px;
-          }
-          .create-room {
-              background: #87CEEB;
-              border: none;
-              color: white;
-              padding: 2px 2px;
-              text-align: center;
-              text-decoration: none;
-              display: inline-block;
-              font-size: 16px;
-              margin: 4px 2px;
-              cursor: pointer;
-              border-radius: 8px;
+          #create-room {
               float: right;
           }
-          label {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            font-weight: bold;
-            color: #00BFFF;
-          }
-          textarea{
-              margin: 4px 2px;
-              border:2px solid #00BFFF;
-              border-radius: 3px;
-          }
-          canvas {
-              border:3px solid #00BFFF;
-              border-radius: 5px;
-              background-color:#FFFFFF;   /*#f1f1f1;*/
-              position: relative;
-              margin-top: 0.2%;
-              /*left: 10%;*/
-              width: 720px;
-              height: 420px;
-          }
-          .container {
-              display: flex;
-              margin-left: 5%;
-          }
-          .div_buttons{
-              display: flex;
-              margin-left: 10%;
-          }
-          #round-button{
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #808080;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            /*box-shadow: 0 2px 6px rgba(0,0,0,0.3);*/
-          }
-          #round-button.active{
-            background: #008CBA;
-          }
+          
           #chat-box-div{
             width:60%;
           }
@@ -126,30 +44,7 @@
             background-color:#FFFFFF;
             overflow:auto
           }
-          .message-div{
-            display: flex;
-            align-items: center;
-          }
-          /* 聊天消息的样式 */
-          .message {
-            background-color: #f0f0f0;
-            padding: 100px;
-            margin-top :20px;
-            margin-bottom: 20px;
-            line-height: 1.5; /* 设置行高为 1.5 */
-          }
-          .avatar{
-            margin-bottom:20px;
-            margin-right: 10px;
-            background-color:aqua
-          }
-          /* 新消息的样式 */
-          .new-message {
-            background-color: #FFFFFF;
-            padding: 10px;
-            margin-bottom: 20px;
-            line-height: 1.5; /* 设置行高为 1.5 */
-          }
+          
           #name-div{
             display: none
           }
@@ -189,13 +84,13 @@
             border-radius: 4px;
             display: none; 
           }
+          #history{
+            float: right;
+          }
         </style>
     </head>
     <body>
-        <div class="container">
-            <!--<label id="receive-label">Receiving</label>-->
-            <!--<textarea id = "receive-text" rows="4" cols="50"></textarea>-->
-            
+        <div class="flex_container">
             <div id="chat-box-div">
               <label id="chat-box-head">Room:</label>
               <div id="chat-box"></div>
@@ -205,7 +100,7 @@
                 <!--<form id="search-form" action="" method="get">-->
                   <input id = "search-area" type="text" name="query" placeholder="input keywords">
                   <button id = "search-button" class = "search-button" type="submit">search</button>
-                  <button id = "create-room" class = "create-room">create room</button>
+                  <button id = "create-room" class = "search-button">create room</button>
                 <!--</form>-->
               </div>
               <div id="room-list-div">
@@ -220,14 +115,14 @@
         <!--<div class = "container">
             <label id="send-label">Sending</label>
         </div>-->
-        <div class="container">
+        <div class="flex_container">
             <textarea id = "input-area" rows="2" cols="80"></textarea>
             <button id = "send-button" >send text</button>
             <!--<button id = "history">chat history</button>-->
             <a id = "history" href="{{ history }}?username={{ username }}">chat history</a>
         </div>
-        <div class="div_buttons">
-          <button id="round-button"></button>
+        <div class="flex_container">
+          <button id="round-button" class="round-button"></button>
           <label id = "message">{{username}}offline</label>
         </div>
         <script>        
@@ -280,16 +175,6 @@
             //roomName = userName;
 
             var roomListBox = document.getElementById("room-list");
-            //alert("Hello, " + userName + "! Welcome to our website!");
-            /*
-            $(function() {
-              $('#search-form').submit(function(event) {
-                event.preventDefault();  // 阻止表单的默认提交行为
-                var query = $('input[name="query"]').val();  // 获取用户输入的关键字
-                // 调用您自己的函数，比如 search(query)
-                ask_for_room_list(query)
-              });
-            });*/
             function label_msg(message){
               var labelMessage = document.getElementById('message');
               labelMessage.innerHTML  = userName + " " + message;
@@ -342,22 +227,9 @@
 
             function add_room_row(roomName){
               if(roomName != ''){
-                /*
-                let div = document.createElement('div');
-                div.classList.add('room-div');
-                div.innerText = roomName
-                roomListBox.appendChild(div);
-                state.selfCreatedRoom = roomName
-                */
-                //roomListBox.scrollTop = roomListBox.scrollHeight;
 
+                //roomListBox.scrollTop = roomListBox.scrollHeight;
                 let row = roomListBox.insertRow();
-                /*
-                row.ondblclick  = function() {
-                  let firstCell = this.cells[0];
-                  const roomName = firstCell.innerHTML;
-                  join(roomName)
-                };*/
                 row.addEventListener('dblclick', function(event){
                   let firstCell = this.cells[0];
                   const roomName = firstCell.innerHTML;
@@ -500,10 +372,6 @@
 
             
             function onReceiveText(data){
-              //var textarea = document.getElementById('receive-text');
-              //var text = data["text"]
-              //textarea.innerText = text;
-              
               const div = document.createElement('div');
               div.classList.add('message-div');
               const avatar = document.createElement('div');
@@ -556,29 +424,6 @@
                 createRoomBtn.style.background = oriBackground2;
               }
             });
-
-            function chat_history(){
-              fetch(serverAddr + '/chat-history-page', {
-                method: 'GET',
-              })
-                .then(response => {
-                  if (response.ok) {
-                    // 请求成功处理
-                    return response.text();
-                  } else {
-                    // 请求失败处理
-                    throw new Error('Request failed');
-                  }
-                })
-                .then(data => {
-                  // 处理返回的数据
-                  console.log(data);
-                })
-                .catch(error => {
-                  // 错误处理
-                  console.error(error);
-                });
-            }
 
             connect()
 
