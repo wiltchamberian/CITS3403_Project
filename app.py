@@ -361,10 +361,10 @@ if __name__ == "__main__":
             print("ENV:", app.config["ENV"])
             if app.config["ENV"] == "remote":
                 app.config["HOST"] = g_config.get('REMOTE_SERVER','HOST')
-                app.config["PORT"] = int(os.environ.get("PORT", app.config["PORT"])) 
+                app.config["PORT"] = os.environ.get("PORT", app.config["PORT"])
   
     host = app.config["HOST"]
-    port = app.config["PORT"]
+    port = int(app.config["PORT"])
 
     log("Flask-SocketIO Start, host:{0}, port:{1}".format(app.config["HOST"],app.config["PORT"]))
     socketio.run(app, host="0.0.0.0", port = port, allow_unsafe_werkzeug = True)
