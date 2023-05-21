@@ -116,7 +116,7 @@ def login():
         g_users[username] = UserInfo()
         g_users[username].time = time.time()
         g_users[username].state = UserState.LOGGED
-        history = url_for('chat_hisotry_page')
+        history = url_for('chat_history_page')
         log(history)
         return render_template('send_text.html', username = username, history = history)
     else:
@@ -173,33 +173,77 @@ def save_text():
   #deliver the text to members in the room
   return res
 
+"""
+@app.route('/chat-history-page', methods=['POST', 'GET'])
+def chat_history_page():
+    log("chat-history-page")
+
+    if request.method == 'POST':
+        query = request.form['search_query']
+        username = request.form['username']
+        current_user = User.query.filter_by(username=username).first()
+        messages = []
+
+        if current_user:
+            if query:
+                messages = Message.query.filter_by(username=current_user.username).filter(Message.message.like(f'%{query}%')).all()
+            else:
+                messages = Message.query.filter_by(username=current_user.username).all()
+
+        return render_template('chat_history.html', chat_history=url_for('chat_history_page'), messages=messages, username=username)
+
+    else:
+        username = request.args.get("username", None)
+        messages = []
+
+        if username:
+            current_user = User.query.filter_by(username=username).first()
+            if current_user:
+                messages = Message.query.filter_by(username=current_user.username).all()
+
+        return render_template('chat_history.html', chat_history=url_for('chat_history_page'), messages=messages, username=username)
+"""
+
+#search for chat history
 #open chat_history web page
 @app.route('/chat-history-page', methods=['POST', 'GET'])
-def chat_hisotry_page():
+def chat_history_page():
     log("chat-history-page")
-    #return render_template('chat_history.html',history = url_for('chat_history'),\
-    #                        index = url_for('index'),\
-    #                        loggin = url_for('login_page'),\
-    #                        register = url_for('register_page'))
+    username = request.args.get("username", None)
+    current_user = User.query.filter_by(username=username).first()
+    messages = []
 
-    username = request.args.get("username",None)
-    return render_template('chat_history.html', chat_history = url_for('chat_history')\
-                           ,messages = []\
-                           , username = username)
+    if current_user is not None:
+        messages = Message.query.filter_by(username=current_user.username).all()
 
-#for search the chat history
-@app.route('/chat_history',methods = ['GET','POST'])
+    return render_template('chat_history.html', chat_history=url_for('chat_history'), messages=messages, username=username)
+
+#allow for search functionality]
+@app.route('/chat_history', methods=['GET', 'POST'])
 def chat_history():
-  log("chat_history")
-  query = request.form['search_query']
-  username = request.form['username']
-  current_user = User.query.filter_by(username= username).first()
-  messages = []
-  if current_user!=None:
-      messages = Message.query.filter_by(username=current_user.username).all()
-  return render_template('chat_history.html' \
-                         ,chat_history = url_for('chat_history')\
-                         ,messages=messages)
+    log("chat_history")
+    query = request.form.get('search_query', '')  # Get the search query from the form
+    username = request.form.get('username', '')  # Get the username from the form
+
+    current_user = User.query.filter_by(username=username).first()
+    messages = []
+
+    if current_user is not None:
+        if query:  # If a search query is provided, filter the messages based on it
+            messages = Message.query.filter(
+                Message.username == current_user.username,
+                (Message.username.contains(query)) | (Message.message.contains(query))
+            ).all()
+        else:  # Otherwise, retrieve all the user's messages
+            messages = Message.query.filter_by(username=current_user.username).all()
+
+    return render_template(
+        'chat_history.html',
+        chat_history=url_for('chat_history'),
+        messages=messages,
+        username=username,
+        search_query=query
+    )
 
 #for chatting, use long-connect
 @socketio.on('connect')
