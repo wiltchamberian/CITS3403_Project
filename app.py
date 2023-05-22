@@ -52,7 +52,6 @@ def get_from_dict(key):
     with user_lock:
         return g_users.get(key)
 
-
 @app.route('/user', methods=['GET', 'POST'])
 def user_create():
   if request.method == "POST":
@@ -368,6 +367,9 @@ if __name__ == "__main__":
             if app.config["ENV"] == "remote":
                 app.config["HOST"] = g_config.get('REMOTE_SERVER','HOST')
                 app.config["PORT"] = os.environ.get("PORT", app.config["PORT"])
+
+    if "--debug" in args:
+        log = print
   
     host = app.config["HOST"]
     port = int(app.config["PORT"])

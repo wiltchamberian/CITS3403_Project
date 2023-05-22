@@ -5,6 +5,9 @@ from dbmgr import db
 from configparser import ConfigParser
 from enum import Enum
 
+def empty_print(*args):
+   pass 
+
 class UserState(Enum):
    UNDEFINED = 0
    LOGGED = 1
@@ -30,7 +33,7 @@ user_lock = Lock()
 #key:room 
 
 socketio = SocketIO()
-log = print
+log = empty_print
 
 # create the app
 app = Flask(__name__)
