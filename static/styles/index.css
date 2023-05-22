@@ -6,14 +6,15 @@ body {
 
 .container {
   padding-top: 20px;
-}
-
-/* Navbar Styles */
-.navbar {
   padding: 10px;
 }
 
-.navbar-brand {
+/* Navbar Styles */
+.c {
+  padding: 10px;
+}
+
+.col-sm-12 float-left Login {
   color: white;
   margin-right: 15px;
 }
