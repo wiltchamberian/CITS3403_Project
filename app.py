@@ -134,7 +134,7 @@ def login():
         g_users[username] = UserInfo()
         g_users[username].time = time.time()
         g_users[username].state = UserState.LOGGED
-        history = url_for('chat_hisotry_page')
+        history = url_for('chat_history_page')
         log(history)
         return user_name_page_response(username)
     else:
@@ -192,7 +192,7 @@ def chat_history_page():
   if current_user is not None:
     messages = Message.query.filter_by(username=current_user.username).all()
 
-  return render_template('chat_history.html', chat_history=url_for('chat_history'), messages=messages, username=username)
+  return chat_history_template(username, messages)
 
 #for searching the chat history
 @app.route('/chat_history',methods = ['GET','POST'])
