@@ -61,10 +61,10 @@
   </head>
 <body>
     <h1>Chat History</h1>
-    <form action="{{chat_history}}" method="post">  
-        <input type="text" name="search_query" placeholder="Search chat history...">
-        <input type="hidden" name="username" value="{{ username }}" >
-        <button type="submit">Search</button>
+    <form action="{{ chat_history }}" method="post">
+      <input type="text" name="search_query" placeholder="Search chat history..." value="{{ search_query }}">
+      <input type="hidden" name="username" value="{{ username }}">
+      <button type="submit">Search</button>
     </form>
     <table>
       <thead>
@@ -75,13 +75,19 @@
         </tr>
       </thead>
       <tbody>
-        {% for message in messages %}
-        <tr>
-          <td>{{ message.timestamp }}</td>
-          <td>{{ message.username }}</td>
-          <td>{{ message.message }}</td>
-        </tr>
-        {% endfor %}
+        {% if messages %}
+          {% for message in messages %}
+          <tr>
+            <td>{{ message.timestamp }}</td>
+            <td>{{ message.username }}</td>
+            <td>{{ message.message }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="3">No results found.</td>
+          </tr>
+        {% endif %}
       </tbody>
     </table>
 </body>
