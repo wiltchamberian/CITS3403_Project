@@ -1,4 +1,34 @@
-* commit 5b7297007d6a8b2057f6235df96fa0c76c149a7d (HEAD -> main, origin/main, origin/HEAD)
+* commit 856a38440dcee661fbd933f944e978648d825fe6 (HEAD -> main, origin/main, origin/HEAD)
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Mon May 22 10:36:05 2023 +0800
+| 
+|     add debug config for no printing
+| 
+* commit c7792e20425cb96019edd3cfddf4cc03194450b7
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Mon May 22 09:51:05 2023 +0800
+| 
+|     fix spelling mistake
+| 
+* commit 2aa426e512cb2b2ef9fd332292e296122a9e5c72
+| Author: nickbaxterr <22973818@student.uwa.edu.au>
+| Date:   Mon May 22 09:28:25 2023 +0800
+| 
+|     adding the search functionality to chat history page on main
+| 
+* commit a1cafbd87b4bc8f99fda683db8687a477a9ff53e (origin/Style_suggestion_by_ChatGpt)
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sun May 21 23:21:09 2023 +0800
+| 
+|     add log
+| 
+* commit cb62b6074d6ddd54f05d652bf69a159562c50ab2
+| Author: yao tang <wiltchamberian@163.com>
+| Date:   Sun May 21 23:17:56 2023 +0800
+| 
+|     add test code
+| 
+* commit 5b7297007d6a8b2057f6235df96fa0c76c149a7d
 | Author: yao tang <wiltchamberian@163.com>
 | Date:   Sun May 21 22:31:05 2023 +0800
 | 
